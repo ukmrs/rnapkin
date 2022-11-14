@@ -1,0 +1,17 @@
+[package]
+name = "rnapkin"
+version = "0.1.0"
+edition = "2021"
+authors = ["ukmrs <murias.wstork@gmail.com>"]
+license = "MIT"
+exclude = ["atelier/"]
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "rnapkin"
+
+
+[dependencies]
