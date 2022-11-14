@@ -1,3 +1,5 @@
+pub mod forest;
+
 type PairList = Vec<Option<usize>>;
 
 #[allow(dead_code)]
