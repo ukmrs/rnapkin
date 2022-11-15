@@ -34,10 +34,7 @@ impl Add for Point {
     type Output = Self;
 
     fn add(self, other: Self) -> Self {
-        Self {
-            x: self.x + other.x,
-            y: self.y + other.y,
-        }
+        Self::new(self.x + other.x, self.y + other.y)
     }
 }
 
@@ -45,10 +42,7 @@ impl Sub for Point {
     type Output = Self;
 
     fn sub(self, other: Self) -> Self {
-        Self {
-            x: self.x - other.x,
-            y: self.y - other.y,
-        }
+        Self::new(self.x - other.x, self.y - other.y)
     }
 }
 
@@ -77,6 +71,5 @@ mod tests {
         let orbiter = p.rotate_around_origin(Point::new(4., 8.), FRAC_PI_2);
         assert!(roughly_equal(orbiter.x, 8.));
         assert!(roughly_equal(orbiter.y, 6.));
-
     }
 }
