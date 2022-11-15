@@ -1,3 +1,4 @@
+pub mod draw;
 pub mod forest;
 
 use forest::{DotBracket, Tree}; // admittedly "from forest import tree" would be funnier
