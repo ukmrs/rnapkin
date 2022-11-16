@@ -1,5 +1,5 @@
-use rnapkin;
-use rnapkin::forest::{DotBracket, Tree};
+use rnapkin::forest::{construct_tree, DotBracket, Tree};
+use rnapkin::rnamanip::get_pair_list;
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::{Path, PathBuf};
@@ -31,7 +31,7 @@ fn pair_list_creation() {
             .map(|x| x.parse::<usize>().ok())
             .collect();
 
-        let rnapking_pair_list = rnapkin::get_pair_list(&structure);
+        let rnapking_pair_list = get_pair_list(&structure);
         assert_eq!(rnapking_pair_list, pair_list)
     }
 }
@@ -137,7 +137,7 @@ fn tree_creation_test() {
             .split(",")
             .map(|x| x.parse::<usize>().ok())
             .collect();
-        let tree = rnapkin::construct_tree(&pair_list);
+        let tree = construct_tree(&pair_list);
         compare_trees(&rna_case[1], tree);
     }
 }
