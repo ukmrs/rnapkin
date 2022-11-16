@@ -13,7 +13,7 @@ impl Point {
     pub fn rotate(self, angle: f64) -> Self {
         let (sin, cos) = (angle.sin(), angle.cos());
         let xo = cos * self.x - sin * self.y;
-        let yo = sin * self.x - cos * self.y;
+        let yo = sin * self.x + cos * self.y;
         Self::new(xo, yo)
     }
 
