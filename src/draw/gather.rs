@@ -1,10 +1,20 @@
-/// bubble / bbl = circle symbolizing a nucleotide
-/// skelly = skeleton circle never drawn but upon its edges bubbles rest in a loop structure
-/// bblr = bubble radius
-/// bbla = amount of bubbles
+//! Gathers x, y coordinates of the nucleotide bubbles
+//! so they can be plotted later
+//! some dumb nomenclature used in this mod:
+//! bubble / bbl = circle symbolizing a nucleotide
+//! skelly = skeleton circle never drawn but upon its edges bubbles rest in a loop structure
+//! bblr = bubble radius
+//! bbla = amount of bubbles
 use super::point::Point;
 use crate::forest::{DotBracket, Tree};
 use std::f64::consts::{FRAC_PI_2, PI, TAU};
+
+#[cfg(debug_assertions)]
+fn print_points(points: Vec<Point>) {
+    for point in &points {
+        println!("{:?}", point);
+    }
+}
 
 fn get_skelly_radius(bblr: f64, delta: Point) -> f64 {
     2. * bblr / (delta.x.powi(2) + delta.y.powi(2)).sqrt()
@@ -45,8 +55,6 @@ pub fn place_bubbles_upon_skelly(
         points.push(Point::new(x, y));
     }
 
-    // !points are correct
-
     let delta = points[1] - points[0];
 
     let skelly_radius = get_skelly_radius(bblr, delta);
@@ -60,6 +68,25 @@ pub fn place_bubbles_upon_skelly(
     points
 }
 
-pub fn gather_points(tree: Tree<DotBracket>, bubble_radius: f64) -> Vec<Point> {
+pub fn gather_points(tree: &Tree<DotBracket>, bubble_radius: f64) -> Vec<Point> {
+    let mut stack = vec![0_usize];
+    let mut a: f64 = 0.;
+    let mut b: f64 = 0.;
+
+    while let Some(idx) = stack.pop() {
+        println!("{}", idx);
+        println!("{:?}", tree[idx]);
+        let node = &tree[idx];
+        let childrena = node.children.len();
+        let midpoint = Point::new(0., 0.5);
+
+        if childrena > 1 {
+            let points = place_bubbles_upon_skelly(childrena, bubble_radius, midpoint, 0., false);
+            print_points(points);
+        }
+
+
+    }
+
     vec![]
 }

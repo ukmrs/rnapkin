@@ -9,6 +9,7 @@ const SEQ: &str = "CGCUUCAUAUAAUCCUAAUGAUAUGGUUUGGGAGUUUCUACCAAGAGCCUUAAACUCUUGA
 #[allow(dead_code)]
 const SST: &str = "...(((((((..((((((.........))))))......).((((((.......))))))..))))))...";
 
+#[allow(unused_variables)]
 pub fn run() {
     let pl = rnamanip::get_pair_list(SST);
     let tree = forest::grow_tree(&pl);
@@ -22,7 +23,6 @@ pub fn run() {
         false,
     );
 
-    for point in &points {
-        println!("{:?}", point);
-    }
+    draw::gather::gather_points(&tree, 0.5);
+
 }

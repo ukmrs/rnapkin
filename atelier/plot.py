@@ -8,7 +8,7 @@ import re
 
 script_dir = Path(__file__).parent
 
-pex = re.compile(r"x: ([-\d\.]+).*?y: ([-\d\.]+)")
+pex = re.compile(r"x: ([-\d\.e]+).*?y: ([-\d\.e]+)")
 matplotlib.rcParams["figure.figsize"] = [6.4 * 1.8, 4.8 * 1.8]  # (default: [6.4, 4.8])
 matplotlib.rcParams["figure.dpi"] = 100  # (default: 100.0)k
 
@@ -41,6 +41,9 @@ def main():
     if not points:
         print("nothing to draw", file=sys.stderr)
         return
+
+    for point in points:
+        print(point)
 
     fig, ax = plt.subplots()
     ax.set_aspect("equal")
