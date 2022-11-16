@@ -7,4 +7,14 @@ const SEQ: &str = "CGCUUCAUAUAAUCCUAAUGAUAUGGUUUGGGAGUUUCUACCAAGAGCCUUAAACUCUUGA
 #[allow(dead_code)]
 const SST: &str = "...(((((((..((((((.........))))))......).((((((.......))))))..))))))...";
 
-pub fn run() {}
+pub fn run() {
+    let pl = rnamanip::get_pair_list(SST);
+    let tree = forest::grow_tree(&pl);
+    for idx in tree.iter() {
+        if !tree[idx].children.is_empty() {
+            let node = &tree[idx];
+            println!("{:?}", node);
+            println!("{:?}", node.children);
+        }
+    }
+}

@@ -29,7 +29,7 @@ pub struct Node<T> {
     #[allow(dead_code)]
     idx: usize,
     pub val: T,
-    pub offspring: Vec<usize>,
+    pub children: Vec<usize>,
 }
 
 impl<T> Node<T> {
@@ -37,14 +37,14 @@ impl<T> Node<T> {
         Self {
             idx,
             val,
-            offspring: vec![],
+            children: vec![],
         }
     }
 }
 
 impl<T> Node<T> {
     pub fn push(&mut self, val: usize) {
-        self.offspring.push(val);
+        self.children.push(val);
     }
 }
 
@@ -70,7 +70,7 @@ impl<'a, T> Iterator for ChickenOfTheWoods<'a, T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(idx) = self.deck.pop() {
-            for kid in self.tree[idx].offspring.iter().rev() {
+            for kid in self.tree[idx].children.iter().rev() {
                 self.deck.push(*kid);
             }
             Some(idx)
@@ -176,7 +176,7 @@ fn rna_walk(
     (tree, root_ix)
 }
 
-pub fn construct_tree(pair_list: &Vec<Option<usize>>) -> Tree<DotBracket> {
+pub fn grow_tree(pair_list: &Vec<Option<usize>>) -> Tree<DotBracket> {
     let mut tree = Tree::default();
     let root_ix = tree.sprout(DotBracket::new_loop());
     (tree, _) = rna_walk(tree, pair_list, root_ix, 0, pair_list.len() - 1);

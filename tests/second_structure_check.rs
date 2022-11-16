@@ -1,4 +1,4 @@
-use rnapkin::forest::{construct_tree, DotBracket, Tree};
+use rnapkin::forest::{grow_tree, DotBracket, Tree};
 use rnapkin::rnamanip::get_pair_list;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -89,7 +89,7 @@ fn compare_trees<P: AsRef<Path>>(tree_file: P, tree: Tree<DotBracket>) {
         let offspring_line = lines.next().expect("offspring line not there").unwrap();
         let mut offspring = offspring_line.split(",").map(|x| x.parse::<usize>().ok());
 
-        for kid in &treenode.offspring {
+        for kid in &treenode.children {
             let db = DotBracket::new(offspring.next().unwrap(), offspring.next().unwrap());
             assert_eq!(tree[*kid].val, db);
         }
@@ -137,7 +137,7 @@ fn tree_creation_test() {
             .split(",")
             .map(|x| x.parse::<usize>().ok())
             .collect();
-        let tree = construct_tree(&pair_list);
+        let tree = grow_tree(&pair_list);
         compare_trees(&rna_case[1], tree);
     }
 }
