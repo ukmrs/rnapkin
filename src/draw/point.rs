@@ -1,5 +1,5 @@
 use std::ops::{Add, Sub};
-#[derive(Debug, Clone, Copy, PartialEq)]
+#[derive(Debug, Default, Clone, Copy, PartialEq)]
 pub struct Point {
     pub x: f64,
     pub y: f64,

@@ -7,7 +7,20 @@
 //! bbla = amount of bubbles
 use super::point::Point;
 use crate::forest::{DotBracket, Tree};
+use crate::rnamanip::Nucleotide;
 use std::f64::consts::{FRAC_PI_2, PI, TAU};
+
+#[derive(Default, Debug, Clone, Copy)]
+struct Bubble {
+    point: Point,
+    nt: Nucleotide,
+}
+
+impl Bubble {
+    fn new(point: Point, nt: Nucleotide) -> Self {
+        Bubble { point, nt }
+    }
+}
 
 #[cfg(debug_assertions)]
 fn print_points(points: Vec<Point>) {
@@ -68,24 +81,30 @@ pub fn place_bubbles_upon_skelly(
     points
 }
 
-pub fn gather_points(tree: &Tree<DotBracket>, bubble_radius: f64) -> Vec<Point> {
+// propably gonna return a bubble: a point and a nt
+pub fn gather_points<T>(tree: &Tree<DotBracket>, seq: &T, bubble_radius: f64) -> Vec<Point>
+where
+    T: std::ops::Index<usize, Output = Nucleotide>,
+{
     let mut stack = vec![0_usize];
-    let mut a: f64 = 0.;
-    let mut b: f64 = 0.;
 
     while let Some(idx) = stack.pop() {
-        println!("{}", idx);
-        println!("{:?}", tree[idx]);
         let node = &tree[idx];
         let childrena = node.children.len();
         let midpoint = Point::new(0., 0.5);
 
         if childrena > 1 {
+            let mut local_bubbles: Vec<Bubble> = vec![];
+            let pair_pos: Vec<usize> = vec![];
+
+            for idx in &node.children {
+                let node = &tree[*idx];
+                println!("{:?}", node);
+            }
+
             let points = place_bubbles_upon_skelly(childrena, bubble_radius, midpoint, 0., false);
             print_points(points);
         }
-
-
     }
 
     vec![]
