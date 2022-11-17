@@ -245,8 +245,9 @@ where
             let new_p0 = plate.p0 + plate.step;
             let new_p1 = plate.p1 + plate.step;
 
-            bubbles.push(Bubble::new(new_p0, Nucleotide::A));
-            bubbles.push(Bubble::new(new_p1, Nucleotide::A));
+            bubbles.push(Bubble::new(new_p0, seq[node.val.pos.unwrap()].into()));
+            // I could just nt.complementary() here tbh
+            bubbles.push(Bubble::new(new_p1, seq[node.val.pair.unwrap()].into()));
 
             let next_plate = Plate {
                 idx: node.children[0],
