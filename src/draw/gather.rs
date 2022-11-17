@@ -151,9 +151,10 @@ where
 
     stack.push(starter);
     let mut bubbles: Vec<Bubble> = vec![];
+    let mut swap: bool = false;
+    let mut dbgtc: usize = 0;
 
     while let Some(plate) = stack.pop() {
-        println!("{:?}", tree[plate.idx].val);
 
         let node = &tree[plate.idx];
         let childrena = node.children.len();
@@ -178,7 +179,7 @@ where
             }
 
             let mut skelly =
-                place_bubbles_upon_skelly(local_bubbles_counter, bblr, midpoint, plate.angle, false);
+                place_bubbles_upon_skelly(local_bubbles_counter, bblr, midpoint, plate.angle, swap);
 
             let mut points = skelly.points.into_iter().enumerate();
 
@@ -214,6 +215,12 @@ where
                 }
             }
 
+            swap = !swap;
+            dbgtc += 1;
+            if dbgtc == 3 {
+                break;
+            }
+
         } else {
 
             // hit the end of stem
@@ -224,7 +231,7 @@ where
                     ..plate
                 };
 
-                // stack.push(next_plate);
+                stack.push(next_plate);
                 continue;
             }
 
