@@ -5,6 +5,7 @@ print points and pipe it in
 cargo run | atelier/plot.py
 """
 import sys
+import math
 from pathlib import Path
 
 import matplotlib
@@ -54,12 +55,12 @@ def main():
         except AttributeError:
             print("not a point", file=sys.stderr)
 
-    if not points and not ntpoints:
+    # don't blame me, python allowed me to do it:
+    dumb = [*points, *(i for ntlist in ntpoints.values() for i in ntlist)]
+
+    if not dumb:
         print("nothing to draw", file=sys.stderr)
         return
-
-    for point in points:
-        print(point)
 
     fig, ax = plt.subplots()
     ax.set_aspect("equal")
@@ -76,10 +77,21 @@ def main():
             for p in v:
                 print(k, p)
 
+    bx, by = float("-INF"), float("-INF")
+    sx, sy = float("INF"), float("INF")
+
+    for x, y in dumb:
+        bx, by = max(bx, x), max(by, y)
+        sx, sy = min(sx, x), min(sy, y)
+
+
+    buffer = 2
+    bx, by, = math.ceil(bx), math.ceil(by)
+    sx, sy, = math.ceil(sx), math.ceil(sy)
+    ax.set_xlim(sx - buffer, bx + buffer)
+    ax.set_ylim(sy - buffer, by + buffer)
     # ax.set_xlim(-LIMS, LIMS)
     # ax.set_ylim(-LIMS, LIMS)
-    ax.set_xlim(-LIMS, LIMS)
-    ax.set_ylim(-LIMS, LIMS)
     ax.legend(handles=handles)
 
     fig.patch.set_facecolor("#393E46")
