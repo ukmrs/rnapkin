@@ -119,18 +119,7 @@ struct Plate {
     // precalculated step; otherwise could be calculated by:
     // Point::new(0., bblr * 2).rotate(ang)
     pub step: Point,
-}
-
-impl Plate {
-    fn new(idx: usize, angle: f64, p0: Point, p1: Point, step: Point) -> Self {
-        Self {
-            idx,
-            angle,
-            p0,
-            p1,
-            step,
-        }
-    }
+    pub swap: bool,
 }
 
 // propably gonna return a bubble: a point and a nt
@@ -147,11 +136,11 @@ where
         p0: Point::new(0., bbld),
         p1: Point::new(bbld, bbld),
         step: Point::new(0., bbld),
+        swap: false,
     };
 
     stack.push(starter);
     let mut bubbles: Vec<Bubble> = vec![];
-    let mut swap: bool = false;
     let mut dbgtc: usize = 0;
 
     while let Some(plate) = stack.pop() {
@@ -179,7 +168,7 @@ where
             }
 
             let mut skelly =
-                place_bubbles_upon_skelly(local_bubbles_counter, bblr, midpoint, plate.angle, swap);
+                place_bubbles_upon_skelly(local_bubbles_counter, bblr, midpoint, plate.angle, plate.swap);
 
             let mut points = skelly.points.into_iter().enumerate();
 
@@ -199,9 +188,8 @@ where
                     let next_idx = tree[node.children[n]].children[0];
                     assert_eq!(tree[node.children[n]].children.len(), 1);
                     let new_angle = angle_around + plate.angle;
-                    println!("{}", new_angle);
 
-                    let step = match swap {
+                    let step = match plate.swap {
                         false => Point::new(0., -bbld).rotate(new_angle),
                         true => Point::new(0., bbld).rotate(new_angle),
                     };
@@ -211,6 +199,7 @@ where
                         angle: new_angle, // TODO prolly not correct; just guessin
                         p0: newp0,
                         p1: newp1,
+                        swap: !plate.swap,
                         step,
                     };
                     stack.push(next_plate);
@@ -222,25 +211,14 @@ where
                 }
             }
 
-            swap = !swap;
             dbgtc += 1;
-            if dbgtc == 6 {
+            if dbgtc == 7 {
                 break;
             }
 
+
         } else {
 
-            // hit the end of stem
-            if tree[node.children[0]].val.pos.is_none() {
-
-                let next_plate = Plate {
-                    idx: plate.idx + 1,
-                    ..plate
-                };
-
-                stack.push(next_plate);
-                continue;
-            }
 
             let new_p0 = plate.p0 + plate.step;
             let new_p1 = plate.p1 + plate.step;
