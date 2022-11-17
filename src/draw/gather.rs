@@ -150,32 +150,35 @@ where
     };
 
     stack.push(starter);
+    let mut bubbles: Vec<Bubble> = vec![];
 
     while let Some(plate) = stack.pop() {
-        println!("{}", stack.len());
         println!("{:?}", tree[plate.idx].val);
 
         let node = &tree[plate.idx];
         let childrena = node.children.len();
         let midpoint = plate.p1.get_middle(plate.p0);
-        let mut local_bubbles: Vec<Bubble> = vec![];
+        let bubbbles_offset = bubbles.len();
+        let mut local_bubbles_counter: usize = 0; 
 
         if childrena > 1 {
             let mut pair_pos: Vec<usize> = vec![];
 
             for (n, idx) in node.children.iter().enumerate() {
+                local_bubbles_counter += 1;
                 let db = &tree[*idx].val;
-                local_bubbles
+                bubbles
                     .push(seq[db.pos.expect("kids should always have a position!?")].into());
 
                 if let Some(pair) = db.pair {
                     pair_pos.push(n);
-                    local_bubbles.push(seq[pair].into());
+                    bubbles.push(seq[pair].into());
+                    local_bubbles_counter += 1;
                 }
             }
 
             let mut skelly =
-                place_bubbles_upon_skelly(local_bubbles.len(), bblr, midpoint, plate.angle, false);
+                place_bubbles_upon_skelly(local_bubbles_counter, bblr, midpoint, plate.angle, false);
 
             let mut points = skelly.points.into_iter().enumerate();
 
@@ -184,16 +187,17 @@ where
                 // Seems like vec is prolly better than hashset in the situation
                 if pair_pos.contains(&(n)) {
                     // swap depended?
-                    let angle_around = skelly.angle_slice * (local_bubbles.len() - n) as f64;
+                    let angle_around = skelly.angle_slice * (local_bubbles_counter - n) as f64;
 
                     let newp0 = plate.p0.rotate_around_origin(skelly.center, angle_around);
-                    local_bubbles[n + 1].point = newp0;
+                    bubbles[n + bubbbles_offset + 1].point = newp0;
 
                     let newp1 = plate.p1.rotate_around_origin(skelly.center, angle_around);
-                    local_bubbles[n].point = newp1;
+                    bubbles[n + bubbbles_offset].point = newp1;
 
                     let next_idx = tree[node.children[n]].children[0];
                     assert_eq!(tree[node.children[n]].children.len(), 1);
+
                     let next_plate = Plate {
                         idx: next_idx,
                         angle: angle_around + plate.angle, // TODO prolly not correct; just guessin
@@ -206,14 +210,40 @@ where
                     // TODO push onto stack? or do a sick backflip and recursion
                     points.next(); // Discard next point
                 } else {
-                    local_bubbles[n].point = p;
+                    bubbles[n + bubbbles_offset].point = p;
                 }
             }
 
-            print_bubbles(&local_bubbles);
         } else {
+
+            // hit the end of stem
+            if tree[node.children[0]].val.pos.is_none() {
+
+                let next_plate = Plate {
+                    idx: plate.idx + 1,
+                    ..plate
+                };
+
+                // stack.push(next_plate);
+                continue;
+            }
+
+            let new_p0 = plate.p0 + plate.step;
+            let new_p1 = plate.p1 + plate.step;
+
+            bubbles.push(Bubble::new(new_p0, Nucleotide::A));
+            bubbles.push(Bubble::new(new_p1, Nucleotide::A));
+
+            let next_plate = Plate {
+                idx: node.children[0],
+                p0: new_p0,
+                p1: new_p1,
+                ..plate
+            };
+            stack.push(next_plate);
         }
     }
 
+    print_bubbles(&bubbles);
     vec![]
 }

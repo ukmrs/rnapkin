@@ -23,7 +23,7 @@ matplotlib.rcParams["figure.dpi"] = 100  # (default: 100.0)k
 
 
 COLORS = {"A": "gold", "C": "forestgreen", "G": "firebrick", "U": "royalblue"}
-LIMS = 14
+LIMS = 20
 
 
 def draw_circles(ax, points, c="b", radius=0.5, **kwargs):
