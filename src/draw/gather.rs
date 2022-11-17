@@ -198,13 +198,20 @@ where
 
                     let next_idx = tree[node.children[n]].children[0];
                     assert_eq!(tree[node.children[n]].children.len(), 1);
+                    let new_angle = angle_around + plate.angle;
+                    println!("{}", new_angle);
+
+                    let step = match swap {
+                        false => Point::new(0., -bbld).rotate(new_angle),
+                        true => Point::new(0., bbld).rotate(new_angle),
+                    };
 
                     let next_plate = Plate {
                         idx: next_idx,
-                        angle: angle_around + plate.angle, // TODO prolly not correct; just guessin
+                        angle: new_angle, // TODO prolly not correct; just guessin
                         p0: newp0,
                         p1: newp1,
-                        step: Point::new(0., bbld),
+                        step,
                     };
                     stack.push(next_plate);
 
@@ -217,7 +224,7 @@ where
 
             swap = !swap;
             dbgtc += 1;
-            if dbgtc == 3 {
+            if dbgtc == 6 {
                 break;
             }
 

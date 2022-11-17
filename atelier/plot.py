@@ -84,7 +84,6 @@ def main():
         bx, by = max(bx, x), max(by, y)
         sx, sy = min(sx, x), min(sy, y)
 
-
     buffer = 2
     bx, by, = math.ceil(bx), math.ceil(by)
     sx, sy, = math.ceil(sx), math.ceil(sy)
