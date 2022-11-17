@@ -19,14 +19,5 @@ pub fn run() {
         .map(|c| Nucleotide::from_char(c).expect("invalid nt!"))
         .collect();
 
-    let midpoint = Point::new(-1.0606, 1.7677);
-    let points = draw::gather::place_bubbles_upon_skelly(
-        9,
-        0.5,
-        midpoint,
-        std::f64::consts::FRAC_PI_4,
-        false,
-    );
-
     draw::gather::gather_points(&tree, &seq, 0.5);
 }

@@ -3,8 +3,8 @@ use std::ops::{Index, IndexMut};
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct DotBracket {
-    pos: Option<usize>,
-    pair: Option<usize>,
+    pub pos: Option<usize>,
+    pub pair: Option<usize>,
 }
 
 impl DotBracket {

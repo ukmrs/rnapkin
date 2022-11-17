@@ -25,7 +25,7 @@ impl Point {
         let (sin, cos) = (angle.sin(), angle.cos());
         let diff = self - origin;
         let xo = origin.x + cos * diff.x - sin * diff.y;
-        let yo = origin.y + sin * diff.x - cos * diff.y;
+        let yo = origin.y + sin * diff.x + cos * diff.y;
         Self::new(xo, yo)
     }
 }
@@ -49,10 +49,10 @@ impl Sub for Point {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::f64::consts::FRAC_PI_2;
+    use std::f64::consts::{FRAC_PI_2, PI};
 
     fn roughly_equal(a: f64, b: f64) -> bool {
-        let eps = f64::EPSILON * 4.; // multiple calculations higher tolerance
+        let eps = f64::EPSILON * 10.; // multiple calculations higher tolerance
         (a - b).abs() < eps
     }
 
@@ -71,5 +71,13 @@ mod tests {
         let orbiter = p.rotate_around_origin(Point::new(4., 8.), FRAC_PI_2);
         assert!(roughly_equal(orbiter.x, 8.));
         assert!(roughly_equal(orbiter.y, 6.));
+
+        let orbiter = p.rotate_around_origin(Point::new(4., 8.), 0.);
+        assert!(roughly_equal(orbiter.x, 2.));
+        assert!(roughly_equal(orbiter.y, 4.));
+
+        let orbiter = p.rotate_around_origin(Point::new(4., 8.), PI);
+        assert!(roughly_equal(orbiter.x, 6.));
+        assert!(roughly_equal(orbiter.y, 12.));
     }
 }

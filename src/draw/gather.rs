@@ -8,12 +8,13 @@
 use super::point::Point;
 use crate::forest::{DotBracket, Tree};
 use crate::rnamanip::Nucleotide;
-use std::f64::consts::{FRAC_PI_2, PI, TAU};
+use std::convert::From;
+use std::f64::consts::{PI, TAU};
 
 #[derive(Default, Debug, Clone, Copy)]
 struct Bubble {
-    point: Point,
-    nt: Nucleotide,
+    pub point: Point,
+    pub nt: Nucleotide,
 }
 
 impl Bubble {
@@ -22,10 +23,32 @@ impl Bubble {
     }
 }
 
+impl From<Nucleotide> for Bubble {
+    fn from(nt: Nucleotide) -> Self {
+        Bubble {
+            nt,
+            ..Self::default()
+        }
+    }
+}
+
+pub struct Skelly {
+    pub points: Vec<Point>,
+    pub angle_slice: f64,
+    pub center: Point,
+}
+
 #[cfg(debug_assertions)]
-fn print_points(points: Vec<Point>) {
-    for point in &points {
+fn print_points(points: &Vec<Point>) {
+    for point in points {
         println!("{:?}", point);
+    }
+}
+
+#[cfg(debug_assertions)]
+fn print_bubbles(bbls: &Vec<Bubble>) {
+    for bbl in bbls {
+        println!("{:?}", bbl);
     }
 }
 
@@ -39,7 +62,7 @@ pub fn place_bubbles_upon_skelly(
     midpoint: Point,
     angle: f64,
     swap: bool,
-) -> Vec<Point> {
+) -> Skelly {
     let angle_slice = TAU / (bbla + 2) as f64;
 
     // allows to place skelly center ahead of the anchored pair
@@ -78,11 +101,15 @@ pub fn place_bubbles_upon_skelly(
         point.y = point.y * skelly_radius + skelly_center.y;
     }
 
-    points
+    Skelly {
+        points,
+        angle_slice,
+        center: skelly_center,
+    }
 }
 
 // propably gonna return a bubble: a point and a nt
-pub fn gather_points<T>(tree: &Tree<DotBracket>, seq: &T, bubble_radius: f64) -> Vec<Point>
+pub fn gather_points<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> Vec<Point>
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
 {
@@ -91,19 +118,49 @@ where
     while let Some(idx) = stack.pop() {
         let node = &tree[idx];
         let childrena = node.children.len();
-        let midpoint = Point::new(0., 0.5);
+        let base_pair0 = Point::new(0., 0.);
+        let base_pair1 = Point::new(bblr * 2., 0.);
+        let midpoint = base_pair1.get_middle(base_pair0);
+        let angle = 0.;
 
         if childrena > 1 {
             let mut local_bubbles: Vec<Bubble> = vec![];
-            let pair_pos: Vec<usize> = vec![];
+            let mut pair_pos: Vec<usize> = vec![];
 
-            for idx in &node.children {
-                let node = &tree[*idx];
-                println!("{:?}", node);
+            for (n, idx) in node.children.iter().enumerate() {
+                let db = &tree[*idx].val;
+                local_bubbles
+                    .push(seq[db.pos.expect("kids should always have a position!?")].into());
+
+                if let Some(pair) = db.pair {
+                    pair_pos.push(n);
+                    local_bubbles.push(seq[pair].into());
+                }
             }
 
-            let points = place_bubbles_upon_skelly(childrena, bubble_radius, midpoint, 0., false);
-            print_points(points);
+            let mut skelly =
+                place_bubbles_upon_skelly(local_bubbles.len(), bblr, midpoint, angle, false);
+
+            let mut points = skelly.points.into_iter().enumerate();
+
+            while let Some((n, p)) = points.next() {
+                // pair_pos.len() will be very small up to 3 maybe 4 but usually less
+                // Seems like vec is prolly better than hashset in the situation
+                if pair_pos.contains(&(n)) {
+                    // swap depended?
+                    let angle_around = skelly.angle_slice * (local_bubbles.len() - n) as f64;
+                    local_bubbles[n].point =
+                        base_pair0.rotate_around_origin(skelly.center, angle_around);
+                    local_bubbles[n + 1].point =
+                        base_pair1.rotate_around_origin(skelly.center, angle_around);
+
+                    // TODO push onto stack? or do a sick backflip and recursion
+                    points.next();
+                } else {
+                    local_bubbles[n].point = p;
+                }
+            }
+            print_bubbles(&local_bubbles);
         }
     }
 

@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""
+allows quick sneak peek into whats happening with rnapkin
+print points and pipe it in
+cargo run | atelier/plot.py
+"""
 import sys
 from pathlib import Path
 
@@ -50,7 +55,7 @@ def main():
     ax.set_axisbelow(True)
     ax.grid(linestyle="--")
 
-    draw_circles(ax, points, "deeppink")
+    draw_circles(ax, points, "deeppink", radius=0.5)
     # ax.set_xlim(-LIMS, LIMS)
     # ax.set_ylim(-LIMS, LIMS)
     ax.set_xlim(-LIMS, LIMS)
