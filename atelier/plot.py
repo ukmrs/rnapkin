@@ -46,7 +46,6 @@ def main():
         try:
             result = pex.search(line)
             nt = ntex.search(line).group(1)
-            print(nt)
             point = float(result.group(1)), float(result.group(2))
             if nt is not None:
                 ntpoints[nt.upper()].append(point)
@@ -74,6 +73,8 @@ def main():
         if v:
             draw_circles(ax, v, COLORS[k], radius=0.5, label=k)
             handles.append(mpatches.Patch(color=COLORS[k], label=k))
+            for p in v:
+                print(k, p)
 
     # ax.set_xlim(-LIMS, LIMS)
     # ax.set_ylim(-LIMS, LIMS)

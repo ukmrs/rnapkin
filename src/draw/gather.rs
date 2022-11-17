@@ -5,6 +5,8 @@
 //! skelly = skeleton circle never drawn but upon its edges bubbles rest in a loop structure
 //! bblr = bubble radius
 //! bbla = amount of bubbles
+//! bbld = bubble diamater; since pair **bubbles** are touching also distance between their center
+//! **not balls**
 use super::point::Point;
 use crate::forest::{DotBracket, Tree};
 use crate::rnamanip::Nucleotide;
@@ -108,23 +110,57 @@ pub fn place_bubbles_upon_skelly(
     }
 }
 
+// TODO think of a name for this
+struct Plate {
+    pub idx: usize,
+    pub angle: f64,
+    pub p0: Point,
+    pub p1: Point,
+    // precalculated step; otherwise could be calculated by:
+    // Point::new(0., bblr * 2).rotate(ang)
+    pub step: Point,
+}
+
+impl Plate {
+    fn new(idx: usize, angle: f64, p0: Point, p1: Point, step: Point) -> Self {
+        Self {
+            idx,
+            angle,
+            p0,
+            p1,
+            step,
+        }
+    }
+}
+
 // propably gonna return a bubble: a point and a nt
 pub fn gather_points<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> Vec<Point>
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
 {
-    let mut stack = vec![0_usize];
+    let mut stack = vec![];
+    let bbld = bblr * 2.;
 
-    while let Some(idx) = stack.pop() {
-        let node = &tree[idx];
+    let starter = Plate {
+        idx: 0,
+        angle: 0.,
+        p0: Point::new(0., bbld),
+        p1: Point::new(bbld, bbld),
+        step: Point::new(0., bbld),
+    };
+
+    stack.push(starter);
+
+    while let Some(plate) = stack.pop() {
+        println!("{}", stack.len());
+        println!("{:?}", tree[plate.idx].val);
+
+        let node = &tree[plate.idx];
         let childrena = node.children.len();
-        let base_pair0 = Point::new(0., 0.);
-        let base_pair1 = Point::new(bblr * 2., 0.);
-        let midpoint = base_pair1.get_middle(base_pair0);
-        let angle = 0.;
+        let midpoint = plate.p1.get_middle(plate.p0);
+        let mut local_bubbles: Vec<Bubble> = vec![];
 
         if childrena > 1 {
-            let mut local_bubbles: Vec<Bubble> = vec![];
             let mut pair_pos: Vec<usize> = vec![];
 
             for (n, idx) in node.children.iter().enumerate() {
@@ -139,7 +175,7 @@ where
             }
 
             let mut skelly =
-                place_bubbles_upon_skelly(local_bubbles.len(), bblr, midpoint, angle, false);
+                place_bubbles_upon_skelly(local_bubbles.len(), bblr, midpoint, plate.angle, false);
 
             let mut points = skelly.points.into_iter().enumerate();
 
@@ -149,18 +185,33 @@ where
                 if pair_pos.contains(&(n)) {
                     // swap depended?
                     let angle_around = skelly.angle_slice * (local_bubbles.len() - n) as f64;
-                    local_bubbles[n].point =
-                        base_pair0.rotate_around_origin(skelly.center, angle_around);
-                    local_bubbles[n + 1].point =
-                        base_pair1.rotate_around_origin(skelly.center, angle_around);
+
+                    let newp0 = plate.p0.rotate_around_origin(skelly.center, angle_around);
+                    local_bubbles[n + 1].point = newp0;
+
+                    let newp1 = plate.p1.rotate_around_origin(skelly.center, angle_around);
+                    local_bubbles[n].point = newp1;
+
+                    let next_idx = tree[node.children[n]].children[0];
+                    assert_eq!(tree[node.children[n]].children.len(), 1);
+                    let next_plate = Plate {
+                        idx: next_idx,
+                        angle: angle_around + plate.angle, // TODO prolly not correct; just guessin
+                        p0: newp0,
+                        p1: newp1,
+                        step: Point::new(0., bbld),
+                    };
+                    stack.push(next_plate);
 
                     // TODO push onto stack? or do a sick backflip and recursion
-                    points.next();
+                    points.next(); // Discard next point
                 } else {
                     local_bubbles[n].point = p;
                 }
             }
+
             print_bubbles(&local_bubbles);
+        } else {
         }
     }
 
