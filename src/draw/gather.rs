@@ -12,6 +12,7 @@ use crate::forest::{DotBracket, Tree};
 use crate::rnamanip::Nucleotide;
 use std::convert::From;
 use std::f64::consts::{PI, TAU};
+use std::ops::{Index, IndexMut};
 
 #[allow(dead_code)]
 #[derive(Default, Debug, Clone, Copy)]
@@ -35,7 +36,7 @@ impl From<Nucleotide> for Bubble {
     }
 }
 
-pub struct Skelly {
+struct Skelly {
     pub points: Vec<Point>,
     pub angle_slice: f64,
     pub center: Point,
@@ -45,7 +46,7 @@ fn get_skelly_radius(bblr: f64, delta: Point) -> f64 {
     2. * bblr / (delta.x.powi(2) + delta.y.powi(2)).sqrt()
 }
 
-pub fn place_bubbles_upon_skelly(
+fn place_bubbles_upon_skelly(
     bbla: usize,
     bblr: f64,
     midpoint: Point,
@@ -103,11 +104,62 @@ struct Plate {
     pub swap: bool,
 }
 
-pub fn gather_bubbles<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> Vec<Bubble>
+/// Serves as gather\_bubbles output, it may grow if there will be
+/// more valuable information to harvest during calculating coordinates.
+/// For now it only keeps track of the bounds which saves one iteration XD
+/// bounds are needed to request appropriate canvas size during drawing
+pub struct BubbleVec {
+    pub bubbles: Vec<Bubble>,
+    pub upper_bounds: Point,
+    pub lower_bounds: Point,
+}
+
+impl Index<usize> for BubbleVec {
+    type Output = Bubble;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.bubbles[index]
+    }
+}
+
+impl BubbleVec {
+    fn new() -> Self {
+        Self {
+            bubbles: vec![],
+            upper_bounds: Point::new(f64::NEG_INFINITY, f64::NEG_INFINITY),
+            lower_bounds: Point::new(f64::INFINITY, f64::INFINITY),
+        }
+    }
+
+    fn len(&self) -> usize {
+        self.bubbles.len()
+    }
+
+    fn push(&mut self, bbl: Bubble) {
+        self.upper_bounds = self.upper_bounds.max(bbl.point);
+        self.lower_bounds = self.lower_bounds.min(bbl.point);
+        self.bubbles.push(bbl);
+    }
+
+    /// Assign concrete point value later
+    fn allocate(&mut self, bbl: Bubble) {
+        self.bubbles.push(bbl)
+    }
+
+    fn set_point(&mut self, idx: usize, p: Point) {
+        self.upper_bounds = self.upper_bounds.max(p);
+        self.lower_bounds = self.lower_bounds.min(p);
+        self.bubbles[idx].point = p;
+    }
+}
+
+pub fn gather_bubbles<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> BubbleVec
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
 {
     let mut stack = vec![];
+    let mut bubbles = BubbleVec::new();
+
     let bbld = bblr * 2.;
 
     let starter = Plate {
@@ -120,7 +172,6 @@ where
     };
 
     stack.push(starter);
-    let mut bubbles: Vec<Bubble> = vec![];
 
     while let Some(plate) = stack.pop() {
         let node = &tree[plate.idx];
@@ -135,11 +186,11 @@ where
             for idx in node.children.iter() {
                 local_bubbles_counter += 1;
                 let db = &tree[*idx].val;
-                bubbles.push(seq[db.pos.expect("kids should always have a position!?")].into());
+                bubbles.allocate(seq[db.pos.expect("kids should always have a position!?")].into());
 
                 if let Some(pair) = db.pair {
                     pair_pos.push(local_bubbles_counter - 1);
-                    bubbles.push(seq[pair].into());
+                    bubbles.allocate(seq[pair].into());
                     local_bubbles_counter += 1;
                 }
             }
@@ -169,9 +220,9 @@ where
                     };
 
                     let newp0 = plate.p0.rotate_around_origin(skelly.center, angle_around);
-                    bubbles[n + bubbbles_offset + kickp0].point = newp0;
+                    bubbles.set_point(n + bubbbles_offset + kickp0, newp0);
                     let newp1 = plate.p1.rotate_around_origin(skelly.center, angle_around);
-                    bubbles[n + bubbbles_offset + kickp1].point = newp1;
+                    bubbles.set_point(n + bubbbles_offset + kickp1, newp1);
 
                     let next_idx = tree[node.children[n - pair_sync]].children[0];
                     let next_plate = Plate {
@@ -187,7 +238,7 @@ where
                     points.next(); // Discard next point
                     pair_sync += 1;
                 } else {
-                    bubbles[n + bubbbles_offset].point = p;
+                    bubbles.set_point(n + bubbbles_offset, p)
                 }
             }
         } else {
@@ -200,14 +251,6 @@ where
             if plate.swap {
                 (pair_nt, pos_nt) = (pos_nt, pair_nt)
             }
-
-            // if plate.swap {
-            //     pos_nt = seq[node.val.pair.unwrap()];
-            //     pair_nt = seq[node.val.pos.unwrap()];
-            // } else {
-            //     pos_nt = seq[node.val.pos.unwrap()];
-            //     pair_nt = seq[node.val.pair.unwrap()];
-            // }
 
             bubbles.push(Bubble::new(new_p0, pos_nt));
             bubbles.push(Bubble::new(new_p1, pair_nt));

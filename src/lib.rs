@@ -29,9 +29,11 @@ pub fn run() {
         .map(|c| Nucleotide::from_char(c).expect("invalid nt!"))
         .collect();
 
-    let bubbles = draw::gather::gather_bubbles(&tree, &seq, 0.5);
+    let bubbles = draw::gather_bubbles(&tree, &seq, 0.5);
 
-    for bbl in bubbles {
+    for bbl in &bubbles.bubbles {
         println!("{:?}", bbl);
     }
+    println!("{:?}", &bubbles.lower_bounds);
+    println!("{:?}", &bubbles.upper_bounds);
 }

@@ -28,6 +28,14 @@ impl Point {
         let yo = origin.y + sin * diff.x + cos * diff.y;
         Self::new(xo, yo)
     }
+
+    pub fn max(self, other: Self) -> Self {
+        Self::new(self.x.max(other.x), self.y.max(other.y))
+    }
+
+    pub fn min(self, other: Self) -> Self {
+        Self::new(self.x.min(other.x), self.y.min(other.y))
+    }
 }
 
 impl Add for Point {
@@ -50,10 +58,10 @@ impl Sub for Point {
 mod tests {
     use super::*;
     use std::f64::consts::{FRAC_PI_2, PI};
+    const EPS: f64 = f64::EPSILON * 10.; //  higher tolerance cause multiple f64 ops are involved
 
     fn roughly_equal(a: f64, b: f64) -> bool {
-        let eps = f64::EPSILON * 10.; // multiple calculations higher tolerance
-        (a - b).abs() < eps
+        (a - b).abs() < EPS
     }
 
     #[test]
