@@ -3,8 +3,8 @@ use std::ops::{Index, IndexMut};
 
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct DotBracket {
-    pos: Option<usize>,
-    pair: Option<usize>,
+    pub pos: Option<usize>,
+    pub pair: Option<usize>,
 }
 
 impl DotBracket {
@@ -29,7 +29,7 @@ pub struct Node<T> {
     #[allow(dead_code)]
     idx: usize,
     pub val: T,
-    pub offspring: Vec<usize>,
+    pub children: Vec<usize>,
 }
 
 impl<T> Node<T> {
@@ -37,14 +37,14 @@ impl<T> Node<T> {
         Self {
             idx,
             val,
-            offspring: vec![],
+            children: vec![],
         }
     }
 }
 
 impl<T> Node<T> {
     pub fn push(&mut self, val: usize) {
-        self.offspring.push(val);
+        self.children.push(val);
     }
 }
 
@@ -70,7 +70,7 @@ impl<'a, T> Iterator for ChickenOfTheWoods<'a, T> {
 
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(idx) = self.deck.pop() {
-            for kid in self.tree[idx].offspring.iter().rev() {
+            for kid in self.tree[idx].children.iter().rev() {
                 self.deck.push(*kid);
             }
             Some(idx)
@@ -134,4 +134,51 @@ where
             println!("{:?}", self[i]);
         }
     }
+}
+
+fn stem_walk(
+    mut tree: Tree<DotBracket>,
+    pair_list: &Vec<Option<usize>>,
+    pos: usize,
+    tail: usize,
+) -> (Tree<DotBracket>, usize) {
+    if pair_list[pos] == Some(tail) {
+        let node_ix = tree.sprout(DotBracket::newsome(pos, tail));
+        let (mut tree, ix) = stem_walk(tree, pair_list, pos + 1, tail - 1);
+        tree[node_ix].push(ix);
+        (tree, node_ix)
+    } else {
+        let node_ix = tree.sprout(DotBracket::new_loop());
+        rna_walk(tree, pair_list, node_ix, pos, tail)
+    }
+}
+
+fn rna_walk(
+    mut tree: Tree<DotBracket>,
+    pair_list: &Vec<Option<usize>>,
+    root_ix: usize,
+    pos: usize,
+    tail: usize,
+) -> (Tree<DotBracket>, usize) {
+    let mut pos = pos;
+    while pos <= tail {
+        if let Some(x) = pair_list[pos] {
+            let node_ix: usize;
+            (tree, node_ix) = stem_walk(tree, pair_list, pos, x);
+            tree[root_ix].push(node_ix);
+            pos = x + 1
+        } else {
+            let node_ix = tree.sprout(DotBracket::new(Some(pos), None));
+            tree[root_ix].push(node_ix);
+            pos += 1;
+        }
+    }
+    (tree, root_ix)
+}
+
+pub fn grow_tree(pair_list: &Vec<Option<usize>>) -> Tree<DotBracket> {
+    let mut tree = Tree::default();
+    let root_ix = tree.sprout(DotBracket::new_loop());
+    (tree, _) = rna_walk(tree, pair_list, root_ix, 0, pair_list.len() - 1);
+    tree
 }
