@@ -173,7 +173,6 @@ where
 
             let mut points = skelly.points.into_iter().enumerate();
 
-            // TODO: test this shit for loops with three and more offshoots
             let mut pair_sync: usize = 0;
             while let Some((n, p)) = points.next() {
                 // pair_pos.len() will be very small up to 3 maybe 4 but usually less
@@ -228,9 +227,18 @@ where
             let new_p0 = plate.p0 + plate.step;
             let new_p1 = plate.p1 + plate.step;
 
-            bubbles.push(Bubble::new(new_p0, seq[node.val.pos.unwrap()].into()));
-            // I could just nt.complementary() here tbh
-            bubbles.push(Bubble::new(new_p1, seq[node.val.pair.unwrap()].into()));
+            let (pos_nt, pair_nt);
+            if plate.swap {
+                pos_nt = seq[node.val.pair.unwrap()];
+                pair_nt = seq[node.val.pos.unwrap()];
+            } else {
+                pos_nt = seq[node.val.pos.unwrap()];
+                pair_nt = seq[node.val.pair.unwrap()];
+            }
+
+
+            bubbles.push(Bubble::new(new_p0, pos_nt).into());
+            bubbles.push(Bubble::new(new_p1, pair_nt).into());
 
             let next_plate = Plate {
                 idx: node.children[0],

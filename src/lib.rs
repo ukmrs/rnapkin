@@ -1,14 +1,18 @@
 pub mod draw;
 pub mod forest;
 pub mod rnamanip;
-
-use draw::point::Point;
 use rnamanip::Nucleotide;
 
 #[allow(dead_code)]
 const SEQ: &str = "CGCUUCAUAUAAUCCUAAUGAUAUGGUUUGGGAGUUUCUACCAAGAGCCUUAAACUCUUGAUUAUGAAGUG";
 #[allow(dead_code)]
 const SST: &str = "...(((((((..((((((.........))))))......).((((((.......))))))..))))))...";
+
+#[allow(dead_code)]
+const FSEQ: &str = "UUAUAGGCGAUGGAGUUCGCCAUAAACGCUGCUUAGCUAAUGACUCCUACCAGUAUCACUACUGGUAGGAGUCUAUUUUUUU";
+#[allow(dead_code)]
+const FSST: &str = ".....(((((......)))))......(((....)))....((((((((((((((....)))))))))))))).........";
+
 
 #[allow(unused_variables)]
 pub fn run() {
