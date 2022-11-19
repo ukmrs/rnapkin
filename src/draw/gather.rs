@@ -13,8 +13,9 @@ use crate::rnamanip::Nucleotide;
 use std::convert::From;
 use std::f64::consts::{PI, TAU};
 
+#[allow(dead_code)]
 #[derive(Default, Debug, Clone, Copy)]
-struct Bubble {
+pub struct Bubble {
     pub point: Point,
     pub nt: Nucleotide,
 }
@@ -38,20 +39,6 @@ pub struct Skelly {
     pub points: Vec<Point>,
     pub angle_slice: f64,
     pub center: Point,
-}
-
-#[cfg(debug_assertions)]
-fn print_points(points: &Vec<Point>) {
-    for point in points {
-        println!("{:?}", point);
-    }
-}
-
-#[cfg(debug_assertions)]
-fn print_bubbles(bbls: &Vec<Bubble>) {
-    for bbl in bbls {
-        println!("{:?}", bbl);
-    }
 }
 
 fn get_skelly_radius(bblr: f64, delta: Point) -> f64 {
@@ -80,11 +67,7 @@ pub fn place_bubbles_upon_skelly(
     // 1.5 I pulled out of thin air: it just aligns nicely then
     let nudge = (bbla as f64 + 2.) * multi + 1.5;
 
-    // not skipping pairs because I need two contigous points
-    // which might not always happen if I filter here
-    // the function will also get more bloated
-    // Its seems way more elegant and its not a huge deal anyway
-    // I could though always take 2 first points and then filter and add center?
+    // TODO this whole operation is very akward; consider options
     let mut points = Vec::with_capacity(bbla);
     for i in 0..bbla {
         let inudge = nudge + i as f64;
@@ -116,14 +99,11 @@ struct Plate {
     pub angle: f64,
     pub p0: Point,
     pub p1: Point,
-    // precalculated step; otherwise could be calculated by:
-    // Point::new(0., bblr * 2).rotate(ang)
-    pub step: Point,
+    pub step: Point, // precalculated; could be calculated on a fly instead
     pub swap: bool,
 }
 
-// propably gonna return a bubble: a point and a nt
-pub fn gather_points<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> Vec<Point>
+pub fn gather_bubbles<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> Vec<Bubble>
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
 {
@@ -141,35 +121,36 @@ where
 
     stack.push(starter);
     let mut bubbles: Vec<Bubble> = vec![];
-    let mut dbgtc: usize = 0;
 
     while let Some(plate) = stack.pop() {
-
         let node = &tree[plate.idx];
         let childrena = node.children.len();
         let midpoint = plate.p1.get_middle(plate.p0);
         let bubbbles_offset = bubbles.len();
-        let mut local_bubbles_counter: usize = 0; 
+        let mut local_bubbles_counter: usize = 0;
 
         if childrena > 1 {
             let mut pair_pos: Vec<usize> = vec![];
 
-            for (n, idx) in node.children.iter().enumerate() {
+            for idx in node.children.iter() {
                 local_bubbles_counter += 1;
                 let db = &tree[*idx].val;
-                bubbles
-                    .push(seq[db.pos.expect("kids should always have a position!?")].into());
+                bubbles.push(seq[db.pos.expect("kids should always have a position!?")].into());
 
                 if let Some(pair) = db.pair {
-                    // pair_pos.push(n);
                     pair_pos.push(local_bubbles_counter - 1);
                     bubbles.push(seq[pair].into());
                     local_bubbles_counter += 1;
                 }
             }
 
-            let skelly =
-                place_bubbles_upon_skelly(local_bubbles_counter, bblr, midpoint, plate.angle, plate.swap);
+            let skelly = place_bubbles_upon_skelly(
+                local_bubbles_counter,
+                bblr,
+                midpoint,
+                plate.angle,
+                plate.swap,
+            );
 
             let mut points = skelly.points.into_iter().enumerate();
 
@@ -178,27 +159,21 @@ where
                 // pair_pos.len() will be very small up to 3 maybe 4 but usually less
                 // Seems like vec is prolly better than hashset in the situation
                 if pair_pos.contains(&(n)) {
-                    eprintln!("{}, {:?}", n, p);
-
                     // swap depended?
                     let angle_around = skelly.angle_slice * (local_bubbles_counter - n) as f64;
                     let new_angle = angle_around + plate.angle;
 
                     let (step, kickp0, kickp1) = match plate.swap {
-                        false => ( Point::new(0., -bbld).rotate(new_angle), 1, 0 ),
+                        false => (Point::new(0., -bbld).rotate(new_angle), 1, 0),
                         true => (Point::new(0., bbld).rotate(new_angle), 0, 1),
                     };
 
                     let newp0 = plate.p0.rotate_around_origin(skelly.center, angle_around);
                     bubbles[n + bubbbles_offset + kickp0].point = newp0;
-
                     let newp1 = plate.p1.rotate_around_origin(skelly.center, angle_around);
                     bubbles[n + bubbbles_offset + kickp1].point = newp1;
 
                     let next_idx = tree[node.children[n - pair_sync]].children[0];
-                    assert_eq!(tree[node.children[n - pair_sync]].children.len(), 1);
-
-
                     let next_plate = Plate {
                         idx: next_idx,
                         angle: new_angle, // TODO prolly not correct; just guessin
@@ -215,31 +190,27 @@ where
                     bubbles[n + bubbbles_offset].point = p;
                 }
             }
-
-            dbgtc += 1;
-            if dbgtc == 70 {
-                break;
-            }
-
-
         } else {
-
-
+            // this branch walks down the stem
             let new_p0 = plate.p0 + plate.step;
             let new_p1 = plate.p1 + plate.step;
 
-            let (pos_nt, pair_nt);
+            let mut pair_nt = seq[node.val.pair.unwrap()];
+            let mut pos_nt = seq[node.val.pos.unwrap()];
             if plate.swap {
-                pos_nt = seq[node.val.pair.unwrap()];
-                pair_nt = seq[node.val.pos.unwrap()];
-            } else {
-                pos_nt = seq[node.val.pos.unwrap()];
-                pair_nt = seq[node.val.pair.unwrap()];
+                (pair_nt, pos_nt) = (pos_nt, pair_nt)
             }
 
+            // if plate.swap {
+            //     pos_nt = seq[node.val.pair.unwrap()];
+            //     pair_nt = seq[node.val.pos.unwrap()];
+            // } else {
+            //     pos_nt = seq[node.val.pos.unwrap()];
+            //     pair_nt = seq[node.val.pair.unwrap()];
+            // }
 
-            bubbles.push(Bubble::new(new_p0, pos_nt).into());
-            bubbles.push(Bubble::new(new_p1, pair_nt).into());
+            bubbles.push(Bubble::new(new_p0, pos_nt));
+            bubbles.push(Bubble::new(new_p1, pair_nt));
 
             let next_plate = Plate {
                 idx: node.children[0],
@@ -251,6 +222,5 @@ where
         }
     }
 
-    print_bubbles(&bubbles);
-    vec![]
+    bubbles
 }

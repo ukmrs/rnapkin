@@ -15,7 +15,7 @@ impl Nucleotide {
             'A' => Nucleotide::A,
             'C' => Nucleotide::C,
             'G' => Nucleotide::G,
-            'U' | 'T' => Nucleotide::U, // TODO I could allow 'U'|'T' => Nucleotide::U but should I?
+            'U' | 'T' => Nucleotide::U, // TODO think about how to handle T?
             _ => return None,
         };
 

@@ -7,12 +7,12 @@ use rnamanip::Nucleotide;
 const SEQ: &str = "CGCUUCAUAUAAUCCUAAUGAUAUGGUUUGGGAGUUUCUACCAAGAGCCUUAAACUCUUGAUUAUGAAGUG";
 #[allow(dead_code)]
 const SST: &str = "...(((((((..((((((.........))))))......).((((((.......))))))..))))))...";
-
 #[allow(dead_code)]
-const FSEQ: &str = "UUAUAGGCGAUGGAGUUCGCCAUAAACGCUGCUUAGCUAAUGACUCCUACCAGUAUCACUACUGGUAGGAGUCUAUUUUUUU";
+const FSEQ: &str =
+    "UUAUAGGCGAUGGAGUUCGCCAUAAACGCUGCUUAGCUAAUGACUCCUACCAGUAUCACUACUGGUAGGAGUCUAUUUUUUU";
 #[allow(dead_code)]
-const FSST: &str = ".....(((((......)))))......(((....)))....((((((((((((((....)))))))))))))).........";
-
+const FSST: &str =
+    ".....(((((......)))))......(((....)))....((((((((((((((....)))))))))))))).........";
 #[allow(dead_code)]
 const TSEQ: &str = "GCAGAACAATTCAATATGTATTCGTTTAACCACTAGGGGTGTCCTTCATAAGGGCTGAGATAAAAGTGTGACTTTTAGACCCTCATAACTTGAACAGGTTCAGACCTGCGTAGGGAAGTGGAGCGGTATTTGTGTTATTTTACTATGCCAATTCCAAACCACTTTTCCTTGCGGGAAAGTGGTTTTTTTA";
 #[allow(dead_code)]
@@ -29,5 +29,9 @@ pub fn run() {
         .map(|c| Nucleotide::from_char(c).expect("invalid nt!"))
         .collect();
 
-    draw::gather::gather_points(&tree, &seq, 0.5);
+    let bubbles = draw::gather::gather_bubbles(&tree, &seq, 0.5);
+
+    for bbl in bubbles {
+        println!("{:?}", bbl);
+    }
 }
