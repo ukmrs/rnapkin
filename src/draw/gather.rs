@@ -161,21 +161,26 @@ where
                     .push(seq[db.pos.expect("kids should always have a position!?")].into());
 
                 if let Some(pair) = db.pair {
-                    pair_pos.push(n);
+                    // pair_pos.push(n);
+                    pair_pos.push(local_bubbles_counter - 1);
                     bubbles.push(seq[pair].into());
                     local_bubbles_counter += 1;
                 }
             }
 
-            let mut skelly =
+            let skelly =
                 place_bubbles_upon_skelly(local_bubbles_counter, bblr, midpoint, plate.angle, plate.swap);
 
             let mut points = skelly.points.into_iter().enumerate();
 
+            // TODO: test this shit for loops with three and more offshoots
+            let mut pair_sync: usize = 0;
             while let Some((n, p)) = points.next() {
                 // pair_pos.len() will be very small up to 3 maybe 4 but usually less
                 // Seems like vec is prolly better than hashset in the situation
                 if pair_pos.contains(&(n)) {
+                    eprintln!("{}, {:?}", n, p);
+
                     // swap depended?
                     let angle_around = skelly.angle_slice * (local_bubbles_counter - n) as f64;
 
@@ -185,8 +190,8 @@ where
                     let newp1 = plate.p1.rotate_around_origin(skelly.center, angle_around);
                     bubbles[n + bubbbles_offset].point = newp1;
 
-                    let next_idx = tree[node.children[n]].children[0];
-                    assert_eq!(tree[node.children[n]].children.len(), 1);
+                    let next_idx = tree[node.children[n - pair_sync]].children[0];
+                    assert_eq!(tree[node.children[n - pair_sync]].children.len(), 1);
                     let new_angle = angle_around + plate.angle;
 
                     let step = match plate.swap {
@@ -204,8 +209,8 @@ where
                     };
                     stack.push(next_plate);
 
-                    // TODO push onto stack? or do a sick backflip and recursion
                     points.next(); // Discard next point
+                    pair_sync += 1;
                 } else {
                     bubbles[n + bubbbles_offset].point = p;
                 }
