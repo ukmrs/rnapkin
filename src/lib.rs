@@ -13,12 +13,18 @@ const FSEQ: &str = "UUAUAGGCGAUGGAGUUCGCCAUAAACGCUGCUUAGCUAAUGACUCCUACCAGUAUCACU
 #[allow(dead_code)]
 const FSST: &str = ".....(((((......)))))......(((....)))....((((((((((((((....)))))))))))))).........";
 
+#[allow(dead_code)]
+const TSEQ: &str = "GCAGAACAATTCAATATGTATTCGTTTAACCACTAGGGGTGTCCTTCATAAGGGCTGAGATAAAAGTGTGACTTTTAGACCCTCATAACTTGAACAGGTTCAGACCTGCGTAGGGAAGTGGAGCGGTATTTGTGTTATTTTACTATGCCAATTCCAAACCACTTTTCCTTGCGGGAAAGTGGTTTTTTTA";
+#[allow(dead_code)]
+const TOFFSST: &str = ".........(((..((((((...((((((((.....((((((((((...)))))).....(((((((...))))))).))))(((.....)))...)))).)))).))))))..)))..((((.(((((..(((......))).)))))..))))(((((((((((((....))))))))))))).....";
+#[allow(dead_code)]
+const TONSST: &str = "...(((((((.((...)).))).))))(((((((..((((((((((...)))))).....(((((((...))))))).))))(((.....))).(((((....)))))(((((((((((((((.(((((..(((......))).)))))..))))).......))))))))))....)))))))......";
 
 #[allow(unused_variables)]
 pub fn run() {
-    let pl = rnamanip::get_pair_list(SST);
+    let pl = rnamanip::get_pair_list(TOFFSST);
     let tree = forest::grow_tree(&pl);
-    let seq: Vec<Nucleotide> = SEQ
+    let seq: Vec<Nucleotide> = TSEQ
         .chars()
         .map(|c| Nucleotide::from_char(c).expect("invalid nt!"))
         .collect();

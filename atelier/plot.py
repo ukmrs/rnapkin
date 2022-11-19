@@ -72,7 +72,7 @@ def main():
     handles = []
     for k, v in ntpoints.items():
         if v:
-            draw_circles(ax, v, COLORS[k], radius=0.5, label=k)
+            draw_circles(ax, v, COLORS[k], radius=0.5, label=k, ec="black")
             handles.append(mpatches.Patch(color=COLORS[k], label=k))
             for p in v:
                 print(k, p)

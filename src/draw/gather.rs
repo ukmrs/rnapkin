@@ -182,21 +182,22 @@ where
 
                     // swap depended?
                     let angle_around = skelly.angle_slice * (local_bubbles_counter - n) as f64;
+                    let new_angle = angle_around + plate.angle;
+
+                    let (step, kickp0, kickp1) = match plate.swap {
+                        false => ( Point::new(0., -bbld).rotate(new_angle), 1, 0 ),
+                        true => (Point::new(0., bbld).rotate(new_angle), 0, 1),
+                    };
 
                     let newp0 = plate.p0.rotate_around_origin(skelly.center, angle_around);
-                    bubbles[n + bubbbles_offset + 1].point = newp0;
+                    bubbles[n + bubbbles_offset + kickp0].point = newp0;
 
                     let newp1 = plate.p1.rotate_around_origin(skelly.center, angle_around);
-                    bubbles[n + bubbbles_offset].point = newp1;
+                    bubbles[n + bubbbles_offset + kickp1].point = newp1;
 
                     let next_idx = tree[node.children[n - pair_sync]].children[0];
                     assert_eq!(tree[node.children[n - pair_sync]].children.len(), 1);
-                    let new_angle = angle_around + plate.angle;
 
-                    let step = match plate.swap {
-                        false => Point::new(0., -bbld).rotate(new_angle),
-                        true => Point::new(0., bbld).rotate(new_angle),
-                    };
 
                     let next_plate = Plate {
                         idx: next_idx,
@@ -216,7 +217,7 @@ where
             }
 
             dbgtc += 1;
-            if dbgtc == 7 {
+            if dbgtc == 70 {
                 break;
             }
 
