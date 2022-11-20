@@ -58,8 +58,8 @@ pub fn plot(bblv: BubbleVec, bblr: f64) -> Result<(), Box<dyn std::error::Error>
     let (x, y) = get_somethin(bblv.upper_bounds, bblv.lower_bounds);
     println!("{}, {}", x, y);
 
-    let rat = (rat * 1000.).round() as u32;
-    let (ex, why) = (rat, 1000);
+    let rat = (rat * 2000.).round() as u32;
+    let (ex, why) = (rat, 2000);
     println!("rat {}", rat);
 
     let root = BitMapBackend::new("img.gi.png", (ex, why)).into_drawing_area();
@@ -83,14 +83,20 @@ pub fn plot(bblv: BubbleVec, bblr: f64) -> Result<(), Box<dyn std::error::Error>
     // bblr - xrange (og points)
     // r - rat
     // bbld is current margin btw
+    let green = RGBColor(54, 174, 124);
+    let blue = RGBColor(24, 116, 152);
+    let red = RGBColor(235, 83, 83);
+    let yellow = RGBColor(249, 217, 35);
+
+
     let bbld = bblr * 2.;
     let r = rat as f64 * bblr / (x + bbld); 
     for bbl in &bblv.bubbles {
         match bbl.nt {
-            Nucleotide::A => nucleotide_bubble(bbl.point, r, NTA, &YELLOW, &root)?,
-            Nucleotide::U => nucleotide_bubble(bbl.point, r, NTU, &BLUE, &root)?,
-            Nucleotide::G => nucleotide_bubble(bbl.point, r, NTG, &RED, &root)?,
-            Nucleotide::C => nucleotide_bubble(bbl.point, r, NTC, &GREEN, &root)?,
+            Nucleotide::A => nucleotide_bubble(bbl.point, r, NTA, &yellow, &root)?,
+            Nucleotide::U => nucleotide_bubble(bbl.point, r, NTU, &blue, &root)?,
+            Nucleotide::G => nucleotide_bubble(bbl.point, r, NTG, &red, &root)?,
+            Nucleotide::C => nucleotide_bubble(bbl.point, r, NTC, &green, &root)?,
             _ => unreachable!(),
         }
     }
