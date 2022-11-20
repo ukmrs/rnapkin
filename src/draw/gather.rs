@@ -12,9 +12,8 @@ use crate::forest::{DotBracket, Tree};
 use crate::rnamanip::Nucleotide;
 use std::convert::From;
 use std::f64::consts::{PI, TAU};
-use std::ops::{Index, IndexMut};
+use std::ops::Index;
 
-#[allow(dead_code)]
 #[derive(Default, Debug, Clone, Copy)]
 pub struct Bubble {
     pub point: Point,
@@ -153,6 +152,10 @@ impl BubbleVec {
     }
 }
 
+pub fn get_starter_points(bbld: f64) -> (Point, Point) {
+    (Point::new(0., bbld), Point::new(bbld, bbld))
+}
+
 pub fn gather_bubbles<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> BubbleVec
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
@@ -161,12 +164,13 @@ where
     let mut bubbles = BubbleVec::new();
 
     let bbld = bblr * 2.;
+    let (p0, p1) = get_starter_points(bbld);
 
     let starter = Plate {
+        p0,
+        p1,
         idx: 0,
         angle: 0.,
-        p0: Point::new(0., bbld),
-        p1: Point::new(bbld, bbld),
         step: Point::new(0., bbld),
         swap: false,
     };
@@ -267,3 +271,6 @@ where
 
     bubbles
 }
+
+#[cfg(test)]
+mod tests {}

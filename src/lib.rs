@@ -22,9 +22,9 @@ const TONSST: &str = "...(((((((.((...)).))).))))(((((((..((((((((((...))))))...
 
 #[allow(unused_variables)]
 pub fn run() {
-    let pl = rnamanip::get_pair_list(SST);
+    let pl = rnamanip::get_pair_list(TOFFSST);
     let tree = forest::grow_tree(&pl);
-    let seq: Vec<Nucleotide> = SEQ
+    let seq: Vec<Nucleotide> = TSEQ
         .chars()
         .map(|c| Nucleotide::from_char(c).expect("invalid nt!"))
         .collect();
@@ -35,7 +35,5 @@ pub fn run() {
         println!("{:?}", bbl);
     }
 
-    println!("{:?}", &bubbles.lower_bounds);
-    println!("{:?}", &bubbles.upper_bounds);
     draw::plot(bubbles, 0.5).expect("oof");
 }
