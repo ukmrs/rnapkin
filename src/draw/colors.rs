@@ -4,7 +4,7 @@ pub mod default_pallette {
     // gruvbox colors https://github.com/morhetz/gruvbox
     // dark
     pub const DARK_C: RGBColor = RGBColor(184, 187, 38); // green for cytosine
-    pub const DARK_U: RGBColor = RGBColor(131, 165, 146); // blue for uridine
+    pub const DARK_U: RGBColor = RGBColor(131, 165, 146); // blue for uracil
     pub const DARK_G: RGBColor = RGBColor(251, 73, 52); // red for guanine
     pub const DARK_A: RGBColor = RGBColor(250, 189, 47); // yellow for adenine
     pub const DARK_X: RGBColor = RGBColor(211, 134, 155); // purple for the unknown

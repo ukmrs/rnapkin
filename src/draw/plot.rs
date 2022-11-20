@@ -7,20 +7,22 @@ use plotters::coord::types::RangedCoordf64;
 use plotters::prelude::*;
 use plotters::style::text_anchor::{HPos, Pos, VPos};
 
-type Canvas<'a> = DrawingArea<BitMapBackend<'a>, Cartesian2d<RangedCoordf64, RangedCoordf64>>;
-
 const NTA: &str = "A";
 const NTG: &str = "G";
 const NTC: &str = "C";
 const NTU: &str = "U";
 
-fn nucleotide_bubble<C: Color>(
+fn nucleotide_bubble<C, D>(
     coords: Point,
     radius: f64,
     letter: &'static str,
     bbl_clr: C,
-    drawing_area: &Canvas,
-) -> Result<(), Box<dyn std::error::Error>> {
+    drawing_area: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
+) -> Result<(), Box<dyn std::error::Error>>
+where
+    C: Color,
+    D: DrawingBackend + 'static,
+{
     let pos = Pos::new(HPos::Center, VPos::Center);
 
     let c = Circle::new((0, 0), radius, Into::<ShapeStyle>::into(bbl_clr).filled());
@@ -48,7 +50,7 @@ pub fn plot(bblv: BubbleVec, bblr: f64) -> Result<(), Box<dyn std::error::Error>
     let xsize = (xyratio * 900.).round() as u32;
     let (ex, why) = (xsize, 900);
 
-    let root = BitMapBackend::new("img.gi.png", (ex, why)).into_drawing_area();
+    let root = SVGBackend::new("img.gi.svg", (ex, why)).into_drawing_area();
     root.fill(&DARK_BG)?;
 
     let (ex, why) = (ex as i32, why as i32);
