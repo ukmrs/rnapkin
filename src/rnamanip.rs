@@ -16,6 +16,7 @@ impl Nucleotide {
             'C' => Nucleotide::C,
             'G' => Nucleotide::G,
             'U' | 'T' => Nucleotide::U, // TODO think about how to handle T?
+            'N' => Nucleotide::X,       // TODO maybe diffrentiate between X and N
             _ => return None,
         };
 
