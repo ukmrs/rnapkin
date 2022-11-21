@@ -4,10 +4,10 @@ use std::path::PathBuf;
 use anyhow::Result;
 use clap::Parser;
 
-use rnapkin::utils::ParsedInput;
 use rnapkin::draw::{self, colors::ColorTheme};
-use rnapkin::rnamanip;
 use rnapkin::forest;
+use rnapkin::rnamanip;
+use rnapkin::utils::ParsedInput;
 
 const BUBBLE_RADIUS: f64 = 0.5;
 
@@ -25,6 +25,11 @@ struct Args {
     /// color theme; dark, bright, white/w, black/b
     #[arg(short, long, default_value = "dark")]
     theme: String,
+
+    /// height in pixels, width will be a ratio of height allowing to fit everything
+    /// more size options coming eventually
+    #[arg(long, default_value_t=900)]
+    height: u32,
 }
 
 fn main() -> Result<()> {
@@ -38,9 +43,15 @@ fn main() -> Result<()> {
 
     match filename.extension().and_then(OsStr::to_str) {
         Some("png") | Some("svg") => (),
-        _ => {
-            filename.set_extension("svg");
+        Some(_) => {
+            // slapping .svg on top of filename; filename.set_extension() does work
+            // but may overwrite something not meant to be an extension
+            filename = PathBuf::from(format!(
+                "{}.svg",
+                filename.to_str().expect("filename is not valid utf8?")
+            ));
         }
+        None => unreachable!(),
     };
 
     let theme = match args.theme.as_ref() {
@@ -49,7 +60,10 @@ fn main() -> Result<()> {
         "black" | "b" => ColorTheme::black(),
         "bright" => ColorTheme::bright(),
         _ => {
-            eprintln!("theme: \"{}\" not recognized!\nfalling back to default", args.theme);
+            eprintln!(
+                "theme: \"{}\" not recognized!\nfalling back to default",
+                args.theme
+            );
             ColorTheme::default()
         }
     };
@@ -58,12 +72,22 @@ fn main() -> Result<()> {
         (Some(sst), Some(sequence)) => {
             let pairlist = rnamanip::get_pair_list(&sst);
             let seq = rnamanip::read_sequence(&sequence);
+            if pairlist.len() != seq.len() {
+                panic!("sequence and secondary structure are different lengths!")
+            }
             let tree = forest::grow_tree(&pairlist);
             let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS);
-            println!("success");
-            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme)?;
-        },
-        (Some(sst), None) => {},
+            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme, args.height)?;
+            println!("drawn: {:?}", &filename);
+        }
+        (Some(sst), None) => {
+            let pairlist = rnamanip::get_pair_list(&sst);
+            let seq = rnamanip::XSequence;
+            let tree = forest::grow_tree(&pairlist);
+            let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS);
+            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme, args.height)?;
+            println!("drawn: {:?}", &filename);
+        }
         (None, Some(_)) => unimplemented!(
             "Calling external soft e.g. RNAFold to get secondary_structure not yet implemented"
         ),

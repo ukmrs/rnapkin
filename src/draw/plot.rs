@@ -25,7 +25,7 @@ fn nucleotide_bubble<C, D>(
 ) -> Result<()>
 where
     C: Color,
-    D: DrawingBackend + 'static,
+    D: DrawingBackend,
 {
     let pos = Pos::new(HPos::Center, VPos::Center);
 
@@ -37,7 +37,7 @@ where
     let text = Text::new(letter, (0, 0), style);
 
     let ee = EmptyElement::at((coords.x, coords.y)) + c + text;
-    drawing_area.draw(&ee)?;
+    drawing_area.draw(&ee).unwrap(); // Cant "?", because there is extremely cursed lifetime on the error
     Ok(())
 }
 
@@ -47,7 +47,7 @@ fn get_distance(p0: Point, p1: Point) -> (f64, f64) {
     (xr, xy)
 }
 
-fn draw<D: DrawingBackend + 'static>(
+fn draw<D: DrawingBackend>(
     root: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
     bblv: &BubbleVec,
     bblr: f64,
@@ -79,9 +79,15 @@ fn draw<D: DrawingBackend + 'static>(
         .pos(pos)
         .color(&theme.fg);
     let end3 = Text::new("3'", (sp1.x, sp1.y), style);
-    root.draw(&end3)?;
-    root.draw(&end5)?;
-    root.present()?;
+
+    // Cant "?", because there is extremely cursed lifetime on the error
+    // that I cant figure out
+    // its very akin to this:
+    // https://github.com/plotters-rs/plotters/issues/62
+    // it also happened when I got rid of hard-coded filename
+    root.draw(&end3).unwrap();
+    root.draw(&end5).unwrap();
+    root.present().unwrap();
 
     Ok(())
 }
@@ -105,12 +111,13 @@ pub fn plot<P: AsRef<Path>>(
     bblr: f64,
     filename: &P,
     theme: &ColorTheme,
+    height: u32,
 ) -> Result<()> {
     let (dx, dy) = get_distance(bblv.upper_bounds, bblv.lower_bounds);
     let xyratio = dx / dy;
 
-    let xsize = (xyratio * 900.).round() as u32;
-    let (ex, why) = (xsize, 900);
+    let xsize = (xyratio * height as f64).round() as u32;
+    let (ex, why) = (xsize, height);
 
     let margin = bblr * 1.5;
 
@@ -121,7 +128,7 @@ pub fn plot<P: AsRef<Path>>(
 
     match filename.as_ref().extension().and_then(OsStr::to_str) {
         Some("svg") => {
-            let root = SVGBackend::new("img.gi.svg", (ex, why)).into_drawing_area();
+            let root = SVGBackend::new(filename, (ex, why)).into_drawing_area();
             let root = root.apply_coord_spec(calculate_coords(
                 bblv.upper_bounds,
                 bblv.lower_bounds,
@@ -133,7 +140,7 @@ pub fn plot<P: AsRef<Path>>(
             draw(&root, bblv, bblr, radius, theme)?;
         }
         Some("png") => {
-            let root = BitMapBackend::new("img.gi.svg", (ex, why)).into_drawing_area();
+            let root = BitMapBackend::new(filename, (ex, why)).into_drawing_area();
             let root = root.apply_coord_spec(calculate_coords(
                 bblv.upper_bounds,
                 bblv.lower_bounds,

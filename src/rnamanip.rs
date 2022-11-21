@@ -30,12 +30,11 @@ impl Default for Nucleotide {
     }
 }
 
-// TODO future dumb hack to draw without seq
-// idk if its a good idea yet but it exists
+/// indexed with any usize always outputs Nucleotide::X
 #[allow(dead_code)]
-pub struct InfiniteXSource;
+pub struct XSequence;
 
-impl std::ops::Index<usize> for InfiniteXSource {
+impl std::ops::Index<usize> for XSequence {
     type Output = Nucleotide;
     fn index(&self, _: usize) -> &Self::Output {
         &Nucleotide::X
@@ -56,7 +55,10 @@ pub fn get_pair_list(secondary_structure: &str) -> Vec<Option<usize>> {
         }
     }
 
-    assert!(deck.is_empty());
+    if !deck.is_empty() {
+        panic!("invalid secondary structure: unclosed bracket")
+    }
+
     lovers
 }
 
