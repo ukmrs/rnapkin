@@ -1,26 +1,34 @@
-type PairList = Vec<Option<usize>>;
+pub mod draw;
+pub mod forest;
+pub mod rnamanip;
+pub mod utils;
+use rnamanip::Nucleotide;
 
 #[allow(dead_code)]
 const SEQ: &str = "CGCUUCAUAUAAUCCUAAUGAUAUGGUUUGGGAGUUUCUACCAAGAGCCUUAAACUCUUGAUUAUGAAGUG";
 #[allow(dead_code)]
 const SST: &str = "...(((((((..((((((.........))))))......).((((((.......))))))..))))))...";
+#[allow(dead_code)]
+const FSEQ: &str =
+    "UUAUAGGCGAUGGAGUUCGCCAUAAACGCUGCUUAGCUAAUGACUCCUACCAGUAUCACUACUGGUAGGAGUCUAUUUUUUU";
+#[allow(dead_code)]
+const FSST: &str =
+    ".....(((((......)))))......(((....)))....((((((((((((((....)))))))))))))).........";
+#[allow(dead_code)]
+const TSEQ: &str = "GCAGAACAATTCAATATGTATTCGTTTAACCACTAGGGGTGTCCTTCATAAGGGCTGAGATAAAAGTGTGACTTTTAGACCCTCATAACTTGAACAGGTTCAGACCTGCGTAGGGAAGTGGAGCGGTATTTGTGTTATTTTACTATGCCAATTCCAAACCACTTTTCCTTGCGGGAAAGTGGTTTTTTTA";
+#[allow(dead_code)]
+const TOFFSST: &str = ".........(((..((((((...((((((((.....((((((((((...)))))).....(((((((...))))))).))))(((.....)))...)))).)))).))))))..)))..((((.(((((..(((......))).)))))..))))(((((((((((((....))))))))))))).....";
+#[allow(dead_code)]
+const TONSST: &str = "...(((((((.((...)).))).))))(((((((..((((((((((...)))))).....(((((((...))))))).))))(((.....))).(((((....)))))(((((((((((((((.(((((..(((......))).)))))..))))).......))))))))))....)))))))......";
 
-pub fn run() {}
+#[allow(unused_variables)]
+pub fn run() {
+    let pl = rnamanip::get_pair_list(TOFFSST);
+    let tree = forest::grow_tree(&pl);
+    let seq: Vec<Nucleotide> = TSEQ
+        .chars()
+        .map(|c| Nucleotide::from_char(c).expect("invalid nt!"))
+        .collect();
 
-pub fn get_pair_list(secondary_structure: &str) -> PairList {
-    let mut lovers = vec![None; secondary_structure.len()];
-    let mut deck = vec![];
-
-    for (position, constraint) in secondary_structure.chars().enumerate() {
-        if constraint == '(' {
-            deck.push(position)
-        } else if constraint == ')' {
-            let pair = deck.pop().expect("unpaired bracket");
-            lovers[position] = pair.into();
-            lovers[pair] = position.into();
-        }
-    }
-
-    assert!(deck.is_empty());
-    lovers
+    let bubbles = draw::gather_bubbles(&tree, &seq, 0.5);
 }
