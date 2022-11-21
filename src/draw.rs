@@ -1,4 +1,4 @@
-mod colors;
+pub mod colors;
 mod gather;
 mod plot;
 mod point;

@@ -1,3 +1,5 @@
+use plotters::style::RGBColor;
+
 #[allow(dead_code)]
 pub mod default_pallette {
     use plotters::style::RGBColor;
@@ -19,4 +21,68 @@ pub mod default_pallette {
     pub const BRIGHT_X: RGBColor = RGBColor(211, 134, 155);
     pub const BRIGHT_BG: RGBColor = RGBColor(251, 241, 199);
     pub const BRIGHT_FG: RGBColor = RGBColor(60, 56, 54);
+}
+
+#[derive(Debug, Clone)]
+pub struct ColorTheme {
+    /// cytosine
+    pub c: RGBColor,
+    /// uracil
+    pub u: RGBColor,
+    /// guanine
+    pub g: RGBColor,
+    /// adenine
+    pub a: RGBColor,
+    /// unknown nt
+    pub x: RGBColor,
+    /// background
+    pub bg: RGBColor,
+    /// foreground
+    pub fg: RGBColor,
+}
+
+impl ColorTheme {
+    pub fn dark() -> Self {
+        Self {
+            a: default_pallette::DARK_A,
+            c: default_pallette::DARK_C,
+            g: default_pallette::DARK_G,
+            u: default_pallette::DARK_U,
+            x: default_pallette::DARK_X,
+            bg: default_pallette::DARK_BG,
+            fg: default_pallette::DARK_FG,
+        }
+    }
+
+    pub fn bright() -> Self {
+        Self {
+            a: default_pallette::BRIGHT_A,
+            c: default_pallette::BRIGHT_C,
+            g: default_pallette::BRIGHT_G,
+            u: default_pallette::BRIGHT_U,
+            x: default_pallette::BRIGHT_X,
+            bg: default_pallette::BRIGHT_BG,
+            fg: default_pallette::BRIGHT_FG,
+        }
+    }
+
+    pub fn black() -> Self {
+        Self {
+            bg: RGBColor(0, 0, 0),
+            ..Self::bright()
+        }
+    }
+
+    pub fn white() -> Self {
+        Self {
+            bg: RGBColor(255, 255, 255),
+            ..Self::bright()
+        }
+    }
+}
+
+impl Default for ColorTheme {
+    fn default() -> Self {
+        Self::dark()
+    }
 }

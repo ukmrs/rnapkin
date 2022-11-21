@@ -35,6 +35,7 @@ impl From<Nucleotide> for Bubble {
     }
 }
 
+#[derive(Debug)]
 struct Skelly {
     pub points: Vec<Point>,
     pub angle_slice: f64,
@@ -94,6 +95,7 @@ fn place_bubbles_upon_skelly(
 }
 
 // TODO think of a name for this
+#[derive(Debug)]
 struct Plate {
     pub idx: usize,
     pub angle: f64,
@@ -156,6 +158,9 @@ pub fn get_starter_points(bbld: f64) -> (Point, Point) {
     (Point::new(0., bbld), Point::new(bbld, bbld))
 }
 
+/// gathers x, y coordinates of the nucleotide bubbles
+/// there's little point to setting bblr to something other than bblr=0.5
+/// because points and bubble radius can be easily upscaled later
 pub fn gather_bubbles<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> BubbleVec
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
@@ -166,10 +171,13 @@ where
     let bbld = bblr * 2.;
     let (p0, p1) = get_starter_points(bbld);
 
+    // accounts for rna starting with a stem right off the bat
+    let starter_idx = usize::from(tree[0].children.len() == 1);
+
     let starter = Plate {
         p0,
         p1,
-        idx: 0,
+        idx: starter_idx,
         angle: 0.,
         step: Point::new(0., bbld),
         swap: false,

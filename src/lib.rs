@@ -1,6 +1,7 @@
 pub mod draw;
 pub mod forest;
 pub mod rnamanip;
+pub mod utils;
 use rnamanip::Nucleotide;
 
 #[allow(dead_code)]
@@ -30,5 +31,4 @@ pub fn run() {
         .collect();
 
     let bubbles = draw::gather_bubbles(&tree, &seq, 0.5);
-    draw::plot(bubbles, 0.5).expect("oof");
 }
