@@ -118,7 +118,7 @@ pub fn plot<P: AsRef<Path>>(
     let xsize = (xyratio * height as f64).round() as u32;
     let (ex, why) = (xsize, height);
 
-    let margin = bblr * 1.5;
+    let margin = bblr * 2.2;
 
     // bblr    - (dx + margin)
     // radius? - xsize
