@@ -33,7 +33,7 @@ drawn: "fantastic_molecule.svg"
 ```
 and this scalable vector graphic would be produced:
 
-![](https://github.com/ukmrs/rnapkin/blob/readme/gallery/fantastic_molecule.svg)
+![](https://github.com/ukmrs/rnapkin/blob/main/gallery/fantastic_molecule.svg)
 
 color themes can be changed by -t flag; a config file allowing to define custom color themes
 is planned though unimplemented!()
