@@ -31,5 +31,4 @@ pub fn run() {
         .collect();
 
     let bubbles = draw::gather_bubbles(&tree, &seq, 0.5);
-    draw::plot(bubbles, 0.5).expect("oof");
 }

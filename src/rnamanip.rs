@@ -59,3 +59,10 @@ pub fn get_pair_list(secondary_structure: &str) -> Vec<Option<usize>> {
     assert!(deck.is_empty());
     lovers
 }
+
+pub fn read_sequence(sequence: &str) -> Vec<Nucleotide> {
+    sequence
+        .chars()
+        .map(|c| Nucleotide::from_char(c).expect("invalid nt!"))
+        .collect()
+}

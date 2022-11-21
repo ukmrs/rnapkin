@@ -156,6 +156,10 @@ pub fn get_starter_points(bbld: f64) -> (Point, Point) {
     (Point::new(0., bbld), Point::new(bbld, bbld))
 }
 
+
+/// gathers x, y coordinates of the nucleotide bubbles
+/// there's little point to setting bblr to something other than bblr=0.5
+/// because points and bubble radius can be easily upscaled later
 pub fn gather_bubbles<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> BubbleVec
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
