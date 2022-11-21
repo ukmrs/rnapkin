@@ -42,7 +42,6 @@ pub struct ColorTheme {
 }
 
 impl ColorTheme {
-
     pub fn dark() -> Self {
         Self {
             a: default_pallette::DARK_A,
@@ -80,7 +79,6 @@ impl ColorTheme {
             ..Self::bright()
         }
     }
-
 }
 
 impl Default for ColorTheme {

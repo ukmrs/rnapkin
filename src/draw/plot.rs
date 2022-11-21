@@ -54,14 +54,13 @@ fn draw<D: DrawingBackend>(
     radius: f64,
     theme: &ColorTheme,
 ) -> Result<()> {
-
     for bbl in &bblv.bubbles {
         match bbl.nt {
-            Nucleotide::A => nucleotide_bubble(bbl.point, radius, NTA, &theme.a, &root)?,
-            Nucleotide::U => nucleotide_bubble(bbl.point, radius, NTU, &theme.u, &root)?,
-            Nucleotide::G => nucleotide_bubble(bbl.point, radius, NTG, &theme.g, &root)?,
-            Nucleotide::C => nucleotide_bubble(bbl.point, radius, NTC, &theme.c, &root)?,
-            Nucleotide::X => nucleotide_bubble(bbl.point, radius, "", &theme.x, &root)?,
+            Nucleotide::A => nucleotide_bubble(bbl.point, radius, NTA, &theme.a, root)?,
+            Nucleotide::U => nucleotide_bubble(bbl.point, radius, NTU, &theme.u, root)?,
+            Nucleotide::G => nucleotide_bubble(bbl.point, radius, NTG, &theme.g, root)?,
+            Nucleotide::C => nucleotide_bubble(bbl.point, radius, NTC, &theme.c, root)?,
+            Nucleotide::X => nucleotide_bubble(bbl.point, radius, "", &theme.x, root)?,
         }
     }
 
@@ -150,7 +149,7 @@ pub fn plot<P: AsRef<Path>>(
             ));
             root.fill(&theme.bg)?;
             draw(&root, bblv, bblr, radius, theme)?;
-        },
+        }
         _ => panic!("correct extension should be determined beforehand"),
     };
 
