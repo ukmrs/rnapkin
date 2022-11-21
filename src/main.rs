@@ -28,7 +28,7 @@ struct Args {
 
     /// height in pixels, width will be a ratio of height allowing to fit everything
     /// more size options coming eventually
-    #[arg(long, default_value_t=900)]
+    #[arg(long, default_value_t = 900)]
     height: u32,
 }
 
@@ -43,7 +43,7 @@ fn main() -> Result<()> {
 
     match filename.extension().and_then(OsStr::to_str) {
         Some("png") | Some("svg") => (),
-        Some(_) => {
+        _ => {
             // slapping .svg on top of filename; filename.set_extension() does work
             // but may overwrite something not meant to be an extension
             filename = PathBuf::from(format!(
@@ -51,7 +51,6 @@ fn main() -> Result<()> {
                 filename.to_str().expect("filename is not valid utf8?")
             ));
         }
-        None => unreachable!(),
     };
 
     let theme = match args.theme.as_ref() {
