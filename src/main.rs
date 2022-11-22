@@ -30,6 +30,12 @@ struct Args {
     /// more size options coming eventually
     #[arg(long, default_value_t = 900)]
     height: u32,
+
+    #[arg(short, long, default_value_t = 0.)]
+    angle: f64,
+
+    #[arg(short, long, default_value_t = false)]
+    mirror: bool,
 }
 
 fn main() -> Result<()> {
@@ -75,16 +81,18 @@ fn main() -> Result<()> {
                 panic!("sequence and secondary structure are different lengths!")
             }
             let tree = forest::grow_tree(&pairlist);
-            let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS);
-            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme, args.height)?;
+            let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS, args.angle.to_radians());
+
+            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme, args.height, args.mirror)?;
+
             println!("drawn: {:?}", &filename);
         }
         (Some(sst), None) => {
             let pairlist = rnamanip::get_pair_list(&sst);
             let seq = rnamanip::XSequence;
             let tree = forest::grow_tree(&pairlist);
-            let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS);
-            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme, args.height)?;
+            let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS, args.angle.to_radians());
+            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme, args.height, args.mirror)?;
             println!("drawn: {:?}", &filename);
         }
         (None, Some(_)) => unimplemented!(

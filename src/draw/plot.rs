@@ -50,7 +50,6 @@ fn get_distance(p0: Point, p1: Point) -> (f64, f64) {
 fn draw<D: DrawingBackend>(
     root: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
     bblv: &BubbleVec,
-    bblr: f64,
     radius: f64,
     theme: &ColorTheme,
 ) -> Result<()> {
@@ -64,20 +63,18 @@ fn draw<D: DrawingBackend>(
         }
     }
 
-    let (sp0, sp1) = get_starter_points(bblr * 2.);
-
-    let pos = Pos::new(HPos::Right, VPos::Center);
+    let pos = Pos::new(HPos::Center, VPos::Center);
     let style = TextStyle::from(("mono", 1.1 * radius).into_font())
         .pos(pos)
         .color(&theme.fg);
 
-    let end5 = Text::new("5'", (sp0.x, sp0.y), style.clone());
+    let end5 = Text::new("5'", (bblv.sp0.x, bblv.sp0.y), style.clone());
 
-    let pos = Pos::new(HPos::Left, VPos::Center);
+    let pos = Pos::new(HPos::Center, VPos::Center);
     let style = TextStyle::from(("mono", 1.1 * radius).into_font())
         .pos(pos)
         .color(&theme.fg);
-    let end3 = Text::new("3'", (sp1.x, sp1.y), style);
+    let end3 = Text::new("3'", (bblv.sp1.x, bblv.sp1.y), style);
 
     // Cant "?", because there is extremely cursed lifetime on the error
     // that I cant figure out
@@ -97,12 +94,21 @@ fn calculate_coords(
     x: i32,
     y: i32,
     margin: f64,
+    mirror: bool,
 ) -> Cartesian2d<RangedCoordf64, RangedCoordf64> {
-    Cartesian2d::<RangedCoordf64, RangedCoordf64>::new(
-        (lower_bounds.x - margin)..(upper_bounds.x + margin),
-        (lower_bounds.y - margin)..(upper_bounds.y + margin),
-        (0..x, 0..y),
-    )
+    if mirror {
+        Cartesian2d::<RangedCoordf64, RangedCoordf64>::new(
+            (upper_bounds.x + margin)..(lower_bounds.x - margin),
+            (lower_bounds.y - margin)..(upper_bounds.y + margin),
+            (0..x, 0..y),
+        )
+    } else {
+        Cartesian2d::<RangedCoordf64, RangedCoordf64>::new(
+            (lower_bounds.x - margin)..(upper_bounds.x + margin),
+            (lower_bounds.y - margin)..(upper_bounds.y + margin),
+            (0..x, 0..y),
+        )
+    }
 }
 
 pub fn plot<P: AsRef<Path>>(
@@ -111,6 +117,7 @@ pub fn plot<P: AsRef<Path>>(
     filename: &P,
     theme: &ColorTheme,
     height: u32,
+    mirror: bool,
 ) -> Result<()> {
     let (dx, dy) = get_distance(bblv.upper_bounds, bblv.lower_bounds);
     let xyratio = dx / dy;
@@ -134,9 +141,10 @@ pub fn plot<P: AsRef<Path>>(
                 ex as i32,
                 why as i32,
                 margin,
+                mirror,
             ));
             root.fill(&theme.bg)?;
-            draw(&root, bblv, bblr, radius, theme)?;
+            draw(&root, bblv, radius, theme)?;
         }
         Some("png") => {
             let root = BitMapBackend::new(filename, (ex, why)).into_drawing_area();
@@ -146,9 +154,10 @@ pub fn plot<P: AsRef<Path>>(
                 ex as i32,
                 why as i32,
                 margin,
+                mirror,
             ));
             root.fill(&theme.bg)?;
-            draw(&root, bblv, bblr, radius, theme)?;
+            draw(&root, bblv, radius, theme)?;
         }
         _ => panic!("correct extension should be determined beforehand"),
     };
