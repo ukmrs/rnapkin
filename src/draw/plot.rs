@@ -16,6 +16,8 @@ const NTG: &str = "G";
 const NTC: &str = "C";
 const NTU: &str = "U";
 
+/// Indicates if and along which axes
+/// to mirror points
 pub struct Mirror {
     pub x: bool,
     pub y: bool,
