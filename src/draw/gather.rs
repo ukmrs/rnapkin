@@ -159,13 +159,21 @@ impl BubbleVec {
 }
 
 pub fn get_starter_points(bbld: f64, angle: f64) -> (Point, Point) {
-    (Point::new(0., bbld).rotate(angle), Point::new(bbld, bbld).rotate(angle))
+    (
+        Point::new(0., bbld).rotate(angle),
+        Point::new(bbld, bbld).rotate(angle),
+    )
 }
 
 /// gathers x, y coordinates of the nucleotide bubbles
 /// there's little point to setting bblr to something other than bblr=0.5
 /// because points and bubble radius can be easily upscaled later
-pub fn gather_bubbles<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64, starting_angle: f64) -> BubbleVec
+pub fn gather_bubbles<T>(
+    tree: &Tree<DotBracket>,
+    seq: &T,
+    bblr: f64,
+    starting_angle: f64,
+) -> BubbleVec
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
 {

@@ -2,7 +2,7 @@ use std::ffi::OsStr;
 use std::path::Path;
 
 use super::colors::ColorTheme;
-use super::gather::{get_starter_points, BubbleVec};
+use super::gather::BubbleVec;
 use super::Point;
 use crate::rnamanip::Nucleotide;
 
@@ -15,6 +15,11 @@ const NTA: &str = "A";
 const NTG: &str = "G";
 const NTC: &str = "C";
 const NTU: &str = "U";
+
+pub struct Mirror {
+    pub x: bool,
+    pub y: bool,
+}
 
 fn nucleotide_bubble<C, D>(
     coords: Point,
@@ -94,21 +99,21 @@ fn calculate_coords(
     x: i32,
     y: i32,
     margin: f64,
-    mirror: bool,
+    mirror: Mirror,
 ) -> Cartesian2d<RangedCoordf64, RangedCoordf64> {
-    if mirror {
-        Cartesian2d::<RangedCoordf64, RangedCoordf64>::new(
-            (upper_bounds.x + margin)..(lower_bounds.x - margin),
-            (lower_bounds.y - margin)..(upper_bounds.y + margin),
-            (0..x, 0..y),
-        )
+    let xrange = if mirror.y {
+        (upper_bounds.x + margin)..(lower_bounds.x - margin)
     } else {
-        Cartesian2d::<RangedCoordf64, RangedCoordf64>::new(
-            (lower_bounds.x - margin)..(upper_bounds.x + margin),
-            (lower_bounds.y - margin)..(upper_bounds.y + margin),
-            (0..x, 0..y),
-        )
-    }
+        (lower_bounds.x - margin)..(upper_bounds.x + margin)
+    };
+
+    let yrange = if mirror.x {
+        (upper_bounds.y + margin)..(lower_bounds.y - margin)
+    } else {
+        (lower_bounds.y - margin)..(upper_bounds.y + margin)
+    };
+
+    Cartesian2d::<RangedCoordf64, RangedCoordf64>::new(xrange, yrange, (0..x, 0..y))
 }
 
 pub fn plot<P: AsRef<Path>>(
@@ -117,7 +122,7 @@ pub fn plot<P: AsRef<Path>>(
     filename: &P,
     theme: &ColorTheme,
     height: u32,
-    mirror: bool,
+    mirror: Mirror,
 ) -> Result<()> {
     let (dx, dy) = get_distance(bblv.upper_bounds, bblv.lower_bounds);
     let xyratio = dx / dy;

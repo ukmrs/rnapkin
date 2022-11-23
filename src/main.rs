@@ -34,8 +34,13 @@ struct Args {
     #[arg(short, long, default_value_t = 0.)]
     angle: f64,
 
-    #[arg(short, long, default_value_t = false)]
-    mirror: bool,
+    /// mirror along y axis
+    #[arg(long, default_value_t = false)]
+    my: bool,
+
+    /// mirror along x axis
+    #[arg(long, default_value_t = false)]
+    mx: bool,
 }
 
 fn main() -> Result<()> {
@@ -73,6 +78,11 @@ fn main() -> Result<()> {
         }
     };
 
+    let mirror = draw::Mirror {
+        x: args.mx,
+        y: args.my,
+    };
+
     match (pi.secondary_structure, pi.sequence) {
         (Some(sst), Some(sequence)) => {
             let pairlist = rnamanip::get_pair_list(&sst);
@@ -83,7 +93,14 @@ fn main() -> Result<()> {
             let tree = forest::grow_tree(&pairlist);
             let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS, args.angle.to_radians());
 
-            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme, args.height, args.mirror)?;
+            draw::plot(
+                &bubbles,
+                BUBBLE_RADIUS,
+                &filename,
+                &theme,
+                args.height,
+                mirror,
+            )?;
 
             println!("drawn: {:?}", &filename);
         }
@@ -92,7 +109,14 @@ fn main() -> Result<()> {
             let seq = rnamanip::XSequence;
             let tree = forest::grow_tree(&pairlist);
             let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS, args.angle.to_radians());
-            draw::plot(&bubbles, BUBBLE_RADIUS, &filename, &theme, args.height, args.mirror)?;
+            draw::plot(
+                &bubbles,
+                BUBBLE_RADIUS,
+                &filename,
+                &theme,
+                args.height,
+                mirror,
+            )?;
             println!("drawn: {:?}", &filename);
         }
         (None, Some(_)) => unimplemented!(
