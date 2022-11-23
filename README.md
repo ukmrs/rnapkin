@@ -33,9 +33,18 @@ drawn: "fantastic_molecule.svg"
 ```
 and this scalable vector graphic would be produced:
 
-![](https://github.com/ukmrs/rnapkin/blob/main/gallery/fantastic_molecule.svg)
+<p align="center">
+ <img src="https://github.com/ukmrs/rnapkin/blob/main/gallery/fantastic_molecule.svg" height="750"/>
+</p>
 
-color themes can be changed by -t flag; a config file allowing to define custom color themes
+
+I quite like it, but if that looks upside down to you, you can tell rnapkin
+to mirror it by --mx flag. Matter of fact you can apply arbitrary rotation 
+with -a / --angle <degrees> option or, of course, mirror along y axis with --my.
+
+![](https://github.com/ukmrs/gallery/blob/main/rnapkin/v0.2.0/angmirrordemo0.png)
+
+color themes can be changed by -t option as demonstrated; a config file allowing to define custom color themes
 is planned though unimplemented!()
 
 

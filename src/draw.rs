@@ -4,5 +4,5 @@ mod plot;
 mod point;
 
 pub use gather::gather_bubbles;
-pub use plot::plot;
+pub use plot::{plot, Mirror};
 pub use point::Point;

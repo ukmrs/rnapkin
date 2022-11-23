@@ -113,6 +113,8 @@ pub struct BubbleVec {
     pub bubbles: Vec<Bubble>,
     pub upper_bounds: Point,
     pub lower_bounds: Point,
+    pub sp0: Point,
+    pub sp1: Point,
 }
 
 impl Index<usize> for BubbleVec {
@@ -124,11 +126,13 @@ impl Index<usize> for BubbleVec {
 }
 
 impl BubbleVec {
-    fn new() -> Self {
+    fn new(sp0: Point, sp1: Point) -> Self {
         Self {
             bubbles: vec![],
             upper_bounds: Point::new(f64::NEG_INFINITY, f64::NEG_INFINITY),
             lower_bounds: Point::new(f64::INFINITY, f64::INFINITY),
+            sp0,
+            sp1,
         }
     }
 
@@ -154,22 +158,30 @@ impl BubbleVec {
     }
 }
 
-pub fn get_starter_points(bbld: f64) -> (Point, Point) {
-    (Point::new(0., bbld), Point::new(bbld, bbld))
+pub fn get_starter_points(bbld: f64, angle: f64) -> (Point, Point) {
+    (
+        Point::new(0., bbld).rotate(angle),
+        Point::new(bbld, bbld).rotate(angle),
+    )
 }
 
 /// gathers x, y coordinates of the nucleotide bubbles
 /// there's little point to setting bblr to something other than bblr=0.5
 /// because points and bubble radius can be easily upscaled later
-pub fn gather_bubbles<T>(tree: &Tree<DotBracket>, seq: &T, bblr: f64) -> BubbleVec
+pub fn gather_bubbles<T>(
+    tree: &Tree<DotBracket>,
+    seq: &T,
+    bblr: f64,
+    starting_angle: f64,
+) -> BubbleVec
 where
     T: std::ops::Index<usize, Output = Nucleotide>,
 {
     let mut stack = vec![];
-    let mut bubbles = BubbleVec::new();
 
     let bbld = bblr * 2.;
-    let (p0, p1) = get_starter_points(bbld);
+    let (p0, p1) = get_starter_points(bbld, starting_angle);
+    let mut bubbles = BubbleVec::new(p0, p1);
 
     // accounts for rna starting with a stem right off the bat
     let starter_idx = usize::from(tree[0].children.len() == 1);
@@ -178,8 +190,8 @@ where
         p0,
         p1,
         idx: starter_idx,
-        angle: 0.,
-        step: Point::new(0., bbld),
+        angle: starting_angle,
+        step: Point::new(0., bbld).rotate(starting_angle),
         swap: false,
     };
 
