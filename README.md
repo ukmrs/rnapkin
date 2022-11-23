@@ -33,7 +33,10 @@ drawn: "fantastic_molecule.svg"
 ```
 and this scalable vector graphic would be produced:
 
-![](https://github.com/ukmrs/rnapkin/blob/main/gallery/fantastic_molecule.svg)
+<p align="center">
+ <img src="https://github.com/ukmrs/rnapkin/blob/main/gallery/fantastic_molecule.svg" height="750"/>
+</p>
+
 
 I quite like it, but if that looks upside down to you, you can tell rnapkin
 to mirror it by --mx flag. Matter of fact you can apply arbitrary rotation 
