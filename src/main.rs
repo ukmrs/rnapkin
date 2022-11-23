@@ -26,11 +26,7 @@ struct Args {
     #[arg(short, long, default_value = "dark")]
     theme: String,
 
-    /// height in pixels, width will be a ratio of height allowing to fit everything
-    /// more size options coming eventually
-    #[arg(long, default_value_t = 900)]
-    height: u32,
-
+    /// angle in degrees
     #[arg(short, long, default_value_t = 0.)]
     angle: f64,
 
@@ -41,6 +37,10 @@ struct Args {
     /// mirror along x axis
     #[arg(long, default_value_t = false)]
     mx: bool,
+
+    /// height in pixels, width will be an appropriate ratio of height
+    #[arg(long, default_value_t = 900)]
+    height: u32,
 }
 
 fn main() -> Result<()> {
