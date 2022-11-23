@@ -42,7 +42,7 @@ I quite like it, but if that looks upside down to you, you can tell rnapkin
 to mirror it by --mx flag. Matter of fact you can apply arbitrary rotation 
 with -a / --angle <degrees> option or, of course, mirror along y axis with --my.
 
-![](https://github.com/ukmrs/gallery/blob/main/rnapkin/v0.1.3/angmirrordemo0.png)
+![](https://github.com/ukmrs/gallery/blob/main/rnapkin/v0.1.2/angmirrordemo0.png)
 
 color themes can be changed by -t option as demonstrated; a config file allowing to define custom color themes
 is planned though unimplemented!()
