@@ -15,15 +15,15 @@ They can be even neatly aligned and mixed like this:
 
 ```text
 >fantastic molecule
-AATATAATAGGAACACTCATATAATCGCGTGGATATGGCACGCAAGTTTCTACCGGGCAC
+AAUAUAAUAGGAACACUCAUAUAAUCGCGUGGAUAUGGCACGCAAGUUUCUACCGGGCAC
 ..........(..(.((((.((((..(((((.......)))))..........((((((.
-CGTAAATGTCCGACTATGGGTGAGCAATGGAACCGCACGTGTACGGTTTTTTGTGATATC
+CGUAAAUGUCCGACUAUGGGUGAGCAAUGGAACCGCACGUGUACGGUUUUUUGUGAUAUC
 ......)))))).....((((((((((((((((((........))))))...........
-AGCATTGCTTGCTCTTTATTTGAGCGGGCAATGCTTTTTTTA
+AGCAUUGCUUGCUCUUUAUUUGAGCGGGCAAUGCUUUUUUUA
 ..)))))))))))).)))).)))).)..).............
 ```
 
-let's say the file above is called *guanineribo*, one could then run napkin thus:
+let's say the file above is called *guanineribo*, one could then run rnapkin thus:
 ```
 rnapkin guanineribo
 ```
@@ -38,11 +38,13 @@ and this scalable vector graphic would be produced:
 </p>
 
 
-I quite like it, but if that looks upside down to you, you can tell rnapkin
+I quite like it, but if that looks upside down to you, tell rnapkin
 to mirror it by --mx flag. Matter of fact you can apply arbitrary rotation 
-with -a / --angle <degrees> option or, of course, mirror along y axis with --my.
+with -a / --angle <degrees> option or, of course, mirror along y axis too with --my.
 
-![](https://github.com/ukmrs/gallery/blob/main/rnapkin/v0.2.0/angmirrordemo0.png)
+<p align="center">
+ <img src="https://github.com/ukmrs/gallery/blob/main/rnapkin/v0.2.0/angmirrordemo0.png" />
+</p>
 
 color themes can be changed by -t option as demonstrated; a config file allowing to define custom color themes
 is planned though unimplemented!()
