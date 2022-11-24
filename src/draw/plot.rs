@@ -24,6 +24,12 @@ pub struct Mirror {
     pub y: bool,
 }
 
+impl Mirror {
+    pub fn new(x: bool, y: bool) -> Self {
+        Self { x, y }
+    }
+}
+
 fn nucleotide_bubble<C, D, S>(
     coords: Point,
     radius: f64,

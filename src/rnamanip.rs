@@ -1,3 +1,5 @@
+use std::fmt;
+
 #[derive(Debug, Clone, Copy)]
 pub enum Nucleotide {
     A,
@@ -30,6 +32,22 @@ impl Default for Nucleotide {
     }
 }
 
+impl fmt::Display for Nucleotide {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Nucleotide::A => write!(f, "A"),
+            Nucleotide::C => write!(f, "C"),
+            Nucleotide::G => write!(f, "G"),
+            Nucleotide::U => write!(f, "U"),
+            Nucleotide::X => write!(f, "N"), // TODO again what I do about that
+        }
+    }
+}
+
+// TODO this one while fun and something I would
+// definitely write in python scares me a little bit to use:
+// I would need to introduce dynamic dispatch that kind of feels bad:
+// box<dyn Index<usize, Output=Nucleotide>>
 /// indexed with any usize always outputs Nucleotide::X
 #[allow(dead_code)]
 pub struct XSequence;
