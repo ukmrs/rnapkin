@@ -34,7 +34,7 @@ fn nucleotide_bubble<C, D, S>(
 where
     C: Color,
     D: DrawingBackend,
-    S: Borrow<str> + 'static
+    S: Borrow<str> + 'static,
 {
     let pos = Pos::new(HPos::Center, VPos::Center);
     let c = Circle::new((0, 0), radius, Into::<ShapeStyle>::into(bbl_clr).filled());

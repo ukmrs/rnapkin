@@ -25,6 +25,18 @@ impl Bubble {
     fn new(point: Point, nt: Nucleotide, pos: usize) -> Self {
         Bubble { point, nt, pos }
     }
+
+    /// constructs a bubble suspended in endless void
+    /// i.e. in x: 0., y: 0. coordinates.
+    /// Function has a scary name because you that is
+    /// prolly me has to give them real coordinates later
+    fn new_in_void(nt: Nucleotide, pos: usize) -> Self {
+        Self {
+            point: Point::default(),
+            nt,
+            pos,
+        }
+    }
 }
 
 impl From<Nucleotide> for Bubble {
@@ -211,11 +223,12 @@ where
             for idx in node.children.iter() {
                 local_bubbles_counter += 1;
                 let db = &tree[*idx].val;
-                bubbles.allocate(seq[db.pos.expect("kids should always have a position!?")].into());
+                let pos = db.pos.expect("kids should always have a position");
+                bubbles.allocate(Bubble::new_in_void(seq[pos], pos));
 
                 if let Some(pair) = db.pair {
                     pair_pos.push(local_bubbles_counter - 1);
-                    bubbles.allocate(seq[pair].into());
+                    bubbles.allocate(Bubble::new_in_void(seq[pair], pair));
                     local_bubbles_counter += 1;
                 }
             }
