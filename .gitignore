@@ -1,4 +1,2 @@
 /target
-*.gi.png
-*.gi.svg
-*.gi.txt
+*.gi.*
