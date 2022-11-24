@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use std::ffi::OsStr;
 use std::path::Path;
 
@@ -23,26 +24,30 @@ pub struct Mirror {
     pub y: bool,
 }
 
-fn nucleotide_bubble<C, D>(
+impl Mirror {
+    pub fn new(x: bool, y: bool) -> Self {
+        Self { x, y }
+    }
+}
+
+fn nucleotide_bubble<C, D, S>(
     coords: Point,
     radius: f64,
-    letter: &'static str,
+    letter: S,
     bbl_clr: &C,
     drawing_area: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
 ) -> Result<()>
 where
     C: Color,
     D: DrawingBackend,
+    S: Borrow<str> + 'static,
 {
     let pos = Pos::new(HPos::Center, VPos::Center);
-
     let c = Circle::new((0, 0), radius, Into::<ShapeStyle>::into(bbl_clr).filled());
-
     let style = TextStyle::from(("mono", 0.8 * radius).into_font())
         .pos(pos)
         .color(&BLACK);
     let text = Text::new(letter, (0, 0), style);
-
     let ee = EmptyElement::at((coords.x, coords.y)) + c + text;
     drawing_area.draw(&ee).unwrap(); // Cant "?", because there is extremely cursed lifetime on the error
     Ok(())
