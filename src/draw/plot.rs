@@ -115,9 +115,9 @@ fn calculate_coords(
     };
 
     let yrange = if mirror.x {
-        (upper_bounds.y + margin)..(lower_bounds.y - margin)
-    } else {
         (lower_bounds.y - margin)..(upper_bounds.y + margin)
+    } else {
+        (upper_bounds.y + margin)..(lower_bounds.y - margin)
     };
 
     Cartesian2d::<RangedCoordf64, RangedCoordf64>::new(xrange, yrange, (0..x, 0..y))

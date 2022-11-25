@@ -123,6 +123,8 @@ fn main() -> Result<()> {
         Mirror::new(args.mx, args.my),
     )?;
 
-    println!("drawn: {:?}", &filename);
+    // rnapkin panics earlier if filename is not valid utf8
+    println!("{}", &filename.to_str().unwrap());
+
     Ok(())
 }
