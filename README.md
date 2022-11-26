@@ -96,13 +96,13 @@ of nucleotide bubbles (with 0.5 unit radius). You can then plot it
 yourself if you need to do something specific;
 
 If you happen to clone the repository, there is an example python
-script using **matplotlib** than you can pipe the input to
-You can also combine -p flag with --mx --my and -a
-
+script using **matplotlib** that you can pipe the input to.
 
 ```bash
 cargo run -- atelier/example_inputs/guaniners -p | atelier/plot.py
 ```
+
+You can also combine -p flag with --mx --my and -a
 
 ## rnapkin name
 The wordsmithing proccess was arduous. It involved
