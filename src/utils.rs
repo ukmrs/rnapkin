@@ -51,7 +51,7 @@ impl ParsedInput {
             match &trimmed[0..1].as_bytes()[0] {
                 0x41..=0x55 | 0x61..=0x75 => sequence.push_str(trimmed), // [A-Ua-u] can catch some non nt but then the input is doomed anyway
                 0x2e | 0x28 | 0x29 => secondary_structure.push_str(trimmed), // .()
-                0x3e => rna_name = Some(line[1..].replace(' ', "_")),    // >
+                0x3e => rna_name = Some(line[1..].trim().replace(' ', "_")), // >
                 _ => continue,
             }
         }
