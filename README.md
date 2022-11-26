@@ -1,10 +1,8 @@
 # rnapkin: drawing RNA secondary structure with style
 ## Usage
 rnapkin accepts a file containing secondary structure and optionally sequence and a name.
-
 For example you could have this marvellous RNA molecule sitting peacefully
 in a file called "guaniners"
-
 ```text
 >fantastic guanine riboswitch
 AAUAUAAUAGGAACACUCAUAUAAUCGCGUGGAUAUGGCACGCAAGUUUCUACCGGGCAC
@@ -14,39 +12,33 @@ CGUAAAUGUCCGACUAUGGGUGAGCAAUGGAACCGCACGUGUACGGUUUUUUGUGAUAUC
 AGCAUUGCUUGCUCUUUAUUUGAGCGGGCAAUGCUUUUUUUA
 ..)))))))))))).)))).)))).)..).............
 ```
-
 Then, if you wish to visualize it, you could invoke rnapkin thus:
-
 ```
 rnapkin guaniners
 ```
-
 Surely rnapkin would respond with the name of a file it has just drawn to:
-
 ```
 fantastic_guanine_riboswitch.svg
 ```
-
-and this scalable vector graphic would be produced:
-
+And this scalable vector graphic would be produced:
 <p align="center">
  <img src="https://raw.githubusercontent.com/ukmrs/gallery/main/rnapkin/v0.3.0/guaniners.svg" height="750"/>
 </p>
 
 *I* happen to quite enjoy the outcome, so *I* would say:
 ```
-thats pretty neat
+that's pretty neat
 ```
 Your mileage may vary though.
 
 ## rotating and flipping
 If you'd like to see this or any other RNA molecule upside-down, tilted or what have you, there are
 some options listed below that you can use and combine:
-
-* -a / --angle <DEGREES> staring angle / boils down to clockwise rotation
-* --mx **m**irror along **x** axis / aka vertical flip
-* --my **m**irror along **y** axis / aka horizontal flip
-
+```text
+-a / --angle <DEGREES> | starting angle / boils down to clockwise rotation
+--mx                   | **m**irror along **x** axis / aka vertical flip
+--my                   | **m**irror along **y** axis / aka horizontal flip
+```
 <p align="center">
  <img src="https://raw.githubusercontent.com/ukmrs/gallery/main/rnapkin/v0.3.0/angle_mirror_demo.png" />
 </p>
@@ -56,7 +48,7 @@ is planned though unimplemented!()
 
 ## Installing
 I plan to offer precompiled binaries but for now
-you'll need rust. Easiest way to get it is with [rustup](https://rustup.rs) :crab:
+you'll need **rust**. Easiest way to acquire **rust** is via [rustup](https://rustup.rs) :crab:
 
 ### Anywhere
 ```bash
@@ -70,7 +62,7 @@ cargo install rnapkin
 ```
 
 ## input file
-input file is quite flexible; it should contain secondary_structure and optionally
+input file is quite **flexible**; it should contain secondary_structure and optionally
 name and sequence. Name has to start with ">" and can be overwritten with -o flag
 which has priority. Here are some variations of valid input files:
 
