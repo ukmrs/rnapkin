@@ -105,9 +105,12 @@ fn main() -> Result<()> {
     };
 
     let tree = forest::grow_tree(&pairlist);
-    let bubbles = draw::gather_bubbles(&tree, &sequence, BUBBLE_RADIUS, args.angle.to_radians());
+    let mut bubbles =
+        draw::gather_bubbles(&tree, &sequence, BUBBLE_RADIUS, args.angle.to_radians());
+    let mirror = Mirror::new(args.mx, args.my);
 
     if args.points {
+        bubbles.mirror(mirror);
         for bbl in &bubbles.bubbles {
             println!("{},{},{},{}", bbl.point.x, bbl.point.y, bbl.nt, bbl.pos);
         }
@@ -120,7 +123,7 @@ fn main() -> Result<()> {
         &filename,
         &theme,
         args.height,
-        Mirror::new(args.mx, args.my),
+        mirror,
     )?;
 
     // rnapkin panics earlier if filename is not valid utf8
