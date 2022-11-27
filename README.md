@@ -1,20 +1,10 @@
 # rnapkin: drawing RNA secondary structure with style
 ## Usage
 rnapkin accepts a file containing secondary structure and optionally sequence and a name.
-For example:
-```
-# name has to start with > 
-# you can add .png / .svg to request specific output; though .svg is default
-# the name can be overwritten with -o flag
->remarkable molecule
-UUAUAGGCGAUGGAGUUCGCCAUAAACGCUGCUUAGCUAAUGACUCCUACCAGUAUCACUACUGGUAGGAGUCUAUUUUUUU
-.....(((((......)))))......(((....)))....((((((((((((((....)))))))))))))).........
-```
-The input format is not that rigid; you can have multiline sequences and structures.
-They can be even neatly aligned and mixed like this:
-
+For example you could have this marvellous RNA molecule sitting peacefully
+in a file called "guaniners"
 ```text
->fantastic molecule
+>fantastic guanine riboswitch
 AAUAUAAUAGGAACACUCAUAUAAUCGCGUGGAUAUGGCACGCAAGUUUCUACCGGGCAC
 ..........(..(.((((.((((..(((((.......)))))..........((((((.
 CGUAAAUGUCCGACUAUGGGUGAGCAAUGGAACCGCACGUGUACGGUUUUUUGUGAUAUC
@@ -22,37 +12,43 @@ CGUAAAUGUCCGACUAUGGGUGAGCAAUGGAACCGCACGUGUACGGUUUUUUGUGAUAUC
 AGCAUUGCUUGCUCUUUAUUUGAGCGGGCAAUGCUUUUUUUA
 ..)))))))))))).)))).)))).)..).............
 ```
-
-let's say the file above is called *guanineribo*, one could then run rnapkin thus:
+Then, if you wish to visualize it, you could invoke rnapkin thus:
 ```
-rnapkin guanineribo
+rnapkin guaniners
 ```
-surely rnapkin would respond:
+Surely rnapkin would respond with the name of a file it has just drawn to:
 ```
-drawn: "fantastic_molecule.svg"
+fantastic_guanine_riboswitch.svg
 ```
-and this scalable vector graphic would be produced:
-
+And this scalable vector graphic would be produced:
 <p align="center">
- <img src="https://github.com/ukmrs/rnapkin/blob/main/gallery/fantastic_molecule.svg" height="750"/>
+ <img src="https://raw.githubusercontent.com/ukmrs/gallery/main/rnapkin/v0.3.0/guaniners.svg" height="750"/>
 </p>
 
+*I* happen to quite enjoy the outcome, so *I* would say:
+```
+that's pretty neat
+```
+Your mileage may vary though.
 
-I quite like it, but if that looks upside down to you, tell rnapkin
-to mirror it by --mx flag. Matter of fact you can apply arbitrary rotation 
-with -a / --angle <degrees> option or, of course, mirror along y axis too with --my.
-
+## rotating and flipping
+If you'd like to see this or any other RNA molecule upside-down, tilted or what have you, there are
+some options listed below that you can use and combine:
+```text
+-a / --angle <DEGREES> | starting angle / boils down to clockwise rotation
+--mx                   | **m**irror along **x** axis / aka vertical flip
+--my                   | **m**irror along **y** axis / aka horizontal flip
+```
 <p align="center">
- <img src="https://github.com/ukmrs/gallery/blob/main/rnapkin/v0.2.0/angmirrordemo0.png" />
+ <img src="https://raw.githubusercontent.com/ukmrs/gallery/main/rnapkin/v0.3.0/angle_mirror_demo.png" />
 </p>
 
 color themes can be changed by -t option as demonstrated; a config file allowing to define custom color themes
 is planned though unimplemented!()
 
-
 ## Installing
 I plan to offer precompiled binaries but for now
-you'll need rust. Easiest way to get it is with [rustup](https://rustup.rs) :crab:
+you'll need **rust**. Easiest way to acquire **rust** is via [rustup](https://rustup.rs) :crab:
 
 ### Anywhere
 ```bash
@@ -64,6 +60,49 @@ Fontconfig is the default Fontmanagement utility on Linux and Unix but WSL may n
 sudo apt-get install libfontconfig libfontconfig1-dev
 cargo install rnapkin
 ```
+
+## input file
+input file is quite **flexible**; it should contain secondary_structure and optionally
+name and sequence. Name has to start with ">" and can be overwritten with -o flag
+which has priority. Here are some variations of valid input files:
+
+### simple one
+
+```text
+# you can add .png to the name to request png instead of svg
+@ the same of course can be achieved with -o flag.
+* this is a comment btw: any symbol other than ">.()" works
+>simple molecule.png
+((((((((((..((((((.........))))))......).((((((.......))))))..)))))))))
+CGCUUCAUAUAAUCCUAAUGAUAUGGUUUGGGAGUUUCUACCAAGAGCCUUAAACUCUUGAUUAUGAAGUG
+```
+
+### only secondary structure
+
+```text
+.........(((..((((((...((((((((.....((((((((((...)))))).....
+(((((((...))))))).))))(((.....)))...)))).)))).))))))..)))..(
+(((.(((((..(((......))).)))))..))))(((((((((((((....))))))))
+))))).....
+```
+
+### multiline
+You've seen it already; sequence and secondary structure can be separate,
+mixed and aligned, everything should work.
+
+## DIY
+using -p / --points flag you can make rnapkin print calculated coordinates
+of nucleotide bubbles (with 0.5 unit radius). You can then plot it
+yourself if you need to do something specific;
+
+If you happen to clone the repository, there is an example python
+script using **matplotlib** that you can pipe the input to.
+
+```bash
+cargo run -- atelier/example_inputs/guaniners -p | atelier/plot.py
+```
+
+You can also combine -p flag with --mx --my and -a
 
 ## rnapkin name
 The wordsmithing proccess was arduous. It involved

@@ -8,6 +8,7 @@
 //! bbld = bubble diamater; since pair **bubbles** are touching also distance between their center
 //! **not balls**
 use super::point::Point;
+use crate::draw::Mirror;
 use crate::forest::{DotBracket, Tree};
 use crate::rnamanip::Nucleotide;
 use std::convert::From;
@@ -168,6 +169,20 @@ impl BubbleVec {
         self.upper_bounds = self.upper_bounds.max(p);
         self.lower_bounds = self.lower_bounds.min(p);
         self.bubbles[idx].point = p;
+    }
+
+    pub fn mirror(&mut self, mirror: Mirror) {
+        let (x, y) = match (mirror.x, mirror.y) {
+            (false, false) => return,
+            (true, true) => (-1., -1.),
+            (false, true) => (-1., 1.),
+            (true, false) => (1., -1.),
+        };
+
+        for bbl in self.bubbles.iter_mut() {
+            bbl.point.x *= x;
+            bbl.point.y *= y;
+        }
     }
 }
 
