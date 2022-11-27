@@ -1,7 +1,7 @@
 # rnapkin: drawing RNA secondary structure with style
 ## Usage
 rnapkin accepts a file containing secondary structure and optionally sequence and a name.
-For example you could have this marvellous RNA molecule sitting peacefully
+For example you could have this marvelous RNA molecule sitting peacefully
 in a file called "guaniners"
 ```text
 >fantastic guanine riboswitch
@@ -35,9 +35,9 @@ Your mileage may vary though.
 If you'd like to see this or any other RNA molecule upside-down, tilted or what have you, there are
 some options listed below that you can use and combine:
 ```text
--a / --angle <DEGREES> | starting angle / boils down to clockwise rotation
---mx                   | **m**irror along **x** axis / aka vertical flip
---my                   | **m**irror along **y** axis / aka horizontal flip
+-a / --angle <DEGREES> | starting Angle / boils down to clockwise rotation
+--mx                   | Mirror along X axis / aka vertical flip
+--my                   | Mirror along Y axis / aka horizontal flip
 ```
 <p align="center">
  <img src="https://raw.githubusercontent.com/ukmrs/gallery/main/rnapkin/v0.3.0/angle_mirror_demo.png" />
