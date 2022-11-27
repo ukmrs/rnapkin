@@ -1,0 +1,18 @@
+>lysC_Lysine.gi
+GGTGAAGATAGAGGTGCGAACTTCAAGAGTATGCCTTTGGAGAAAGATGGATTCTGTGAA
+AAAGGCTGAAAGGGGAGCGTCGCCGAAGCAAATAAAACCCCATCGGTATTATTTGCTGGC
+CGTGCATTGAATAAATGTAAGGCTGTCAAGAAATCATTTTCTTGGAGGGCTATCTCGTTG
+TTCATAATCATTTATGATGATTAATTGATAAGCAATGAGAGTATTCCTCTCATTGCTTTT
+TTT
+;OFF - structure
+.....((((((....((((.((((........((((((......(((.....))).....
+)))))).......))))..))))...(((((((((.(((.....))).)))))))))(((
+(.((((((.....)))))).)))).((((((((....))))))))....)))))).....
+.............................((((((((((((.....))))))))))))..
+...
+;ON - structure
+/* ........(((....((((.((((........((((((......(((.....)))..... */
+/* )))))).......))))..))))...(((((((((.(((.....))).)))))))))((( */
+/* (.((((((.....)))))).)))).((((((((....))))))))....)))(((((((( */
+/* ((............................)))))))))).................... */
+/* ... */

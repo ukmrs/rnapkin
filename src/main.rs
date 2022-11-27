@@ -4,9 +4,9 @@ use std::path::PathBuf;
 use anyhow::Result;
 use clap::Parser;
 
-use rnapkin::draw::{self, colors::ColorTheme};
+use rnapkin::draw::{self, colors::ColorTheme, Mirror};
 use rnapkin::forest;
-use rnapkin::rnamanip;
+use rnapkin::rnamanip::{self, Nucleotide};
 use rnapkin::utils::ParsedInput;
 
 const BUBBLE_RADIUS: f64 = 0.5;
@@ -18,29 +18,33 @@ struct Args {
     /// file containing secondary_structure and sequence
     input: String,
 
-    /// output file; supported extensions .svg and .png
+    /// Output file; supported extensions: .svg and .png
     #[arg(short, long)]
     output: Option<String>,
 
-    /// color theme; dark, bright, white/w, black/b
+    /// Color theme; dark, bright, white/w, black/b
     #[arg(short, long, default_value = "dark")]
     theme: String,
 
-    /// height in pixels, width will be a ratio of height allowing to fit everything
-    /// more size options coming eventually
-    #[arg(long, default_value_t = 900)]
-    height: u32,
-
+    /// Angle in degrees
     #[arg(short, long, default_value_t = 0.)]
     angle: f64,
 
-    /// mirror along y axis
+    /// Mirror along y axis
     #[arg(long, default_value_t = false)]
     my: bool,
 
-    /// mirror along x axis
+    /// Mirror along x axis
     #[arg(long, default_value_t = false)]
     mx: bool,
+
+    /// Height in pixels, width will be an appropriate ratio of height
+    #[arg(long, default_value_t = 900)]
+    height: u32,
+
+    /// Print x,y,nucleotide,position (0 indexed) and exit
+    #[arg(short, long, default_value_t = false)]
+    points: bool,
 }
 
 fn main() -> Result<()> {
@@ -78,52 +82,52 @@ fn main() -> Result<()> {
         }
     };
 
-    let mirror = draw::Mirror {
-        x: args.mx,
-        y: args.my,
-    };
-
-    match (pi.secondary_structure, pi.sequence) {
-        (Some(sst), Some(sequence)) => {
-            let pairlist = rnamanip::get_pair_list(&sst);
-            let seq = rnamanip::read_sequence(&sequence);
-            if pairlist.len() != seq.len() {
-                panic!("sequence and secondary structure are different lengths!")
-            }
-            let tree = forest::grow_tree(&pairlist);
-            let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS, args.angle.to_radians());
-
-            draw::plot(
-                &bubbles,
-                BUBBLE_RADIUS,
-                &filename,
-                &theme,
-                args.height,
-                mirror,
-            )?;
-
-            println!("drawn: {:?}", &filename);
+    let (pairlist, sequence) = match (pi.secondary_structure, pi.sequence) {
+        (Some(sst), Some(seq)) => {
+            let pl = rnamanip::get_pair_list(&sst);
+            let seq = rnamanip::read_sequence(&seq);
+            assert_eq!(
+                pl.len(),
+                seq.len(),
+                "sequence and structure have differents lenghts!"
+            );
+            (pl, seq)
         }
         (Some(sst), None) => {
             let pairlist = rnamanip::get_pair_list(&sst);
-            let seq = rnamanip::XSequence;
-            let tree = forest::grow_tree(&pairlist);
-            let bubbles = draw::gather_bubbles(&tree, &seq, BUBBLE_RADIUS, args.angle.to_radians());
-            draw::plot(
-                &bubbles,
-                BUBBLE_RADIUS,
-                &filename,
-                &theme,
-                args.height,
-                mirror,
-            )?;
-            println!("drawn: {:?}", &filename);
+            let seq = vec![Nucleotide::X; pairlist.len()]; // TODO del XSequence if am not gonna use it
+            (pairlist, seq)
         }
         (None, Some(_)) => unimplemented!(
             "Calling external soft e.g. RNAFold to get secondary_structure not yet implemented"
         ),
         (None, None) => panic!("Neither sequence nor secondary structure found in the input file!"),
     };
+
+    let tree = forest::grow_tree(&pairlist);
+    let mut bubbles =
+        draw::gather_bubbles(&tree, &sequence, BUBBLE_RADIUS, args.angle.to_radians());
+    let mirror = Mirror::new(args.mx, args.my);
+
+    if args.points {
+        bubbles.mirror(mirror);
+        for bbl in &bubbles.bubbles {
+            println!("{},{},{},{}", bbl.point.x, bbl.point.y, bbl.nt, bbl.pos);
+        }
+        return Ok(());
+    }
+
+    draw::plot(
+        &bubbles,
+        BUBBLE_RADIUS,
+        &filename,
+        &theme,
+        args.height,
+        mirror,
+    )?;
+
+    // rnapkin panics earlier if filename is not valid utf8
+    println!("{}", &filename.to_str().unwrap());
 
     Ok(())
 }

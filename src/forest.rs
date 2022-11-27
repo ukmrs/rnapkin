@@ -1,6 +1,9 @@
 use std::fmt;
 use std::ops::{Index, IndexMut};
 
+/// Represents status of a nucleotide;
+/// its position or optionally a pair if its got one.
+/// pos: None represents beginning of a new loop
 #[derive(Debug, Default, PartialEq, Eq)]
 pub struct DotBracket {
     pub pos: Option<usize>,
@@ -12,6 +15,10 @@ impl DotBracket {
         Self { pos, pair }
     }
 
+    /// creates a new DotBracket but allows
+    /// to pass raw usizes and then wraps
+    /// them into Some(usize) under the hood;
+    /// basically conveninent version of new()
     pub fn newsome(pos: usize, pair: usize) -> Self {
         Self {
             pos: Some(pos),
@@ -19,11 +26,16 @@ impl DotBracket {
         }
     }
 
+    /// Creates DotBracket with pos set to None
+    /// symbolizing beginning of a loop structure
     pub fn new_loop() -> Self {
         Self::new(None, None)
     }
 }
 
+/// simple node struct containing its children and a value.
+/// Children are meant to be usizes corresponding to indexes of
+/// the tree's arena vector which in turn grant access to actual node
 #[derive(Debug)]
 pub struct Node<T> {
     #[allow(dead_code)]
@@ -48,7 +60,7 @@ impl<T> Node<T> {
     }
 }
 
-/// Tree adapter
+/// Tree Iterator adapter
 #[derive(Debug)]
 pub struct ChickenOfTheWoods<'a, T> {
     // idx: usize,
@@ -99,6 +111,10 @@ impl<T> IndexMut<usize> for Tree<T> {
     }
 }
 
+/// Memory arena tree data structure
+/// Nodes refer to other nodes by the index
+/// of said arena instead of holding direct
+/// pointers to each other
 impl<T> Default for Tree<T> {
     fn default() -> Self {
         Self { arena: Vec::new() }

@@ -8,6 +8,7 @@
 //! bbld = bubble diamater; since pair **bubbles** are touching also distance between their center
 //! **not balls**
 use super::point::Point;
+use crate::draw::Mirror;
 use crate::forest::{DotBracket, Tree};
 use crate::rnamanip::Nucleotide;
 use std::convert::From;
@@ -18,11 +19,24 @@ use std::ops::Index;
 pub struct Bubble {
     pub point: Point,
     pub nt: Nucleotide,
+    pub pos: usize,
 }
 
 impl Bubble {
-    fn new(point: Point, nt: Nucleotide) -> Self {
-        Bubble { point, nt }
+    fn new(point: Point, nt: Nucleotide, pos: usize) -> Self {
+        Bubble { point, nt, pos }
+    }
+
+    /// constructs a bubble suspended in endless void
+    /// i.e. in x: 0., y: 0. coordinates.
+    /// Function has a scary name because you that is
+    /// prolly me has to give them real coordinates later
+    fn new_in_void(nt: Nucleotide, pos: usize) -> Self {
+        Self {
+            point: Point::default(),
+            nt,
+            pos,
+        }
     }
 }
 
@@ -156,6 +170,20 @@ impl BubbleVec {
         self.lower_bounds = self.lower_bounds.min(p);
         self.bubbles[idx].point = p;
     }
+
+    pub fn mirror(&mut self, mirror: Mirror) {
+        let (x, y) = match (mirror.x, mirror.y) {
+            (false, false) => return,
+            (true, true) => (-1., -1.),
+            (false, true) => (-1., 1.),
+            (true, false) => (1., -1.),
+        };
+
+        for bbl in self.bubbles.iter_mut() {
+            bbl.point.x *= x;
+            bbl.point.y *= y;
+        }
+    }
 }
 
 pub fn get_starter_points(bbld: f64, angle: f64) -> (Point, Point) {
@@ -210,11 +238,12 @@ where
             for idx in node.children.iter() {
                 local_bubbles_counter += 1;
                 let db = &tree[*idx].val;
-                bubbles.allocate(seq[db.pos.expect("kids should always have a position!?")].into());
+                let pos = db.pos.expect("kids should always have a position");
+                bubbles.allocate(Bubble::new_in_void(seq[pos], pos));
 
                 if let Some(pair) = db.pair {
                     pair_pos.push(local_bubbles_counter - 1);
-                    bubbles.allocate(seq[pair].into());
+                    bubbles.allocate(Bubble::new_in_void(seq[pair], pair));
                     local_bubbles_counter += 1;
                 }
             }
@@ -270,14 +299,18 @@ where
             let new_p0 = plate.p0 + plate.step;
             let new_p1 = plate.p1 + plate.step;
 
-            let mut pair_nt = seq[node.val.pair.unwrap()];
-            let mut pos_nt = seq[node.val.pos.unwrap()];
+            let mut pair_position = node.val.pair.unwrap();
+            let mut pos_position = node.val.pos.unwrap();
+
             if plate.swap {
-                (pair_nt, pos_nt) = (pos_nt, pair_nt)
+                (pair_position, pos_position) = (pos_position, pair_position)
             }
 
-            bubbles.push(Bubble::new(new_p0, pos_nt));
-            bubbles.push(Bubble::new(new_p1, pair_nt));
+            let pair_nt = seq[pair_position];
+            let pos_nt = seq[pos_position];
+
+            bubbles.push(Bubble::new(new_p0, pos_nt, pos_position));
+            bubbles.push(Bubble::new(new_p1, pair_nt, pair_position));
 
             let next_plate = Plate {
                 idx: node.children[0],
