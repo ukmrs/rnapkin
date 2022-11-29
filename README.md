@@ -1,4 +1,8 @@
+
 # rnapkin: drawing RNA secondary structure with style
+[![Crates.io](https://img.shields.io/crates/v/rnapkin?color=F55353)](https://crates.io/crates/rnapkin)
+[![Downloads](https://img.shields.io/crates/d/rnapkin?color=FEB139)](https://crates.io/crates/rnapkin)
+
 ## Usage
 rnapkin accepts a file containing secondary structure and optionally sequence and a name.
 For example you could have this marvelous RNA molecule sitting peacefully
@@ -31,7 +35,7 @@ that's pretty neat
 ```
 Your mileage may vary though.
 
-## rotating and flipping
+## Rotating and flipping
 If you'd like to see this or any other RNA molecule upside-down, tilted or what have you, there are
 some options listed below that you can use and combine:
 ```text
@@ -61,8 +65,15 @@ sudo apt-get install libfontconfig libfontconfig1-dev
 cargo install rnapkin
 ```
 
-## input file
-input file is quite **flexible**; it should contain secondary_structure and optionally
+## Input
+input can be served to rnapkin as a file or be piped in:
+
+```bash
+rnapkin cmolecule.fa -a 20 -o crab
+echo ".......(((((......))))).....(((((......)))))......." | rnapkin -a 20 -o crab
+```
+
+input is quite **flexible**; it should contain secondary_structure and optionally
 name and sequence. Name has to start with ">" and can be overwritten with -o flag
 which has priority. Here are some variations of valid input files:
 

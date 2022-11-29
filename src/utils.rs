@@ -1,8 +1,10 @@
 use std::fs::File;
+use std::io;
 use std::io::{BufRead, BufReader, Lines};
 use std::path::Path;
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
+use atty::{self, Stream};
 
 fn read_lines<P>(filename: P) -> Result<Lines<BufReader<File>>>
 where
@@ -28,6 +30,7 @@ fn empty_then_none(s: String) -> Option<String> {
 }
 
 impl ParsedInput {
+    /// reads file and passes it to Self::parse
     pub fn from_file(input_file: &str) -> Result<Self> {
         let mut lines = read_lines(input_file)
             .with_context(|| format!("could not read file: {}", input_file))?
@@ -35,6 +38,22 @@ impl ParsedInput {
         Self::parse(&mut lines)
     }
 
+    /// reads stdin and passes it to Self::parse
+    pub fn from_pipe() -> Result<Self> {
+        if atty::is(Stream::Stdin) {
+            bail!("No input provided! nothing to do :c")
+        }
+
+        let stdin = io::stdin();
+        let mut lines = stdin.lock().lines().map(|x| x.expect("invalid utf8?"));
+        Self::parse(&mut lines)
+    }
+
+    /// parses user provided input reads lines and checks the first byte:
+    /// interprets A-Ua-u as nucleotides
+    /// interprets .() as secondary structure
+    /// interprets > as name
+    /// ignores everything else
     fn parse<L>(lines: &mut L) -> Result<Self>
     where
         L: Iterator<Item = String>,

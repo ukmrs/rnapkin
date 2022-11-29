@@ -1,12 +1,13 @@
 [package]
 name = "rnapkin"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 authors = ["ukmrs <murias.wstork@gmail.com>"]
 repository = "https://github.com/ukmrs/rnapkin"
 license = "MIT"
 exclude = ["atelier/"]
-keywords = ["rna", "secondary_structure", "napkin", "fold", "draw"]
+keywords = ["rna", "secondary_structure", "bioinformatics", "fold", "draw"]
+categories = ["command-line-utilities", "science"]
 description = "CLI utility for drawing RNA secondary structure"
 
 [lib]
@@ -19,5 +20,6 @@ name = "rnapkin"
 
 [dependencies]
 anyhow = "1.0.66"
+atty = "0.2.14"
 clap = { version = "4.0.26", features = ["derive"] }
 plotters = "0.3.4"
