@@ -734,6 +734,7 @@ name = "rnapkin"
 version = "0.3.0"
 dependencies = [
  "anyhow",
+ "atty",
  "clap",
  "plotters",
 ]

@@ -16,7 +16,7 @@ const BUBBLE_RADIUS: f64 = 0.5;
 #[command(author, version, about, long_about = None)]
 struct Args {
     /// file containing secondary_structure and sequence
-    input: String,
+    input: Option<String>,
 
     /// Output file; supported extensions: .svg and .png
     #[arg(short, long)]
@@ -49,7 +49,11 @@ struct Args {
 
 fn main() -> Result<()> {
     let args = Args::parse();
-    let pi = ParsedInput::from_file(&args.input)?;
+
+    let pi = match args.input {
+        Some(input) => ParsedInput::from_file(&input)?,
+        None => ParsedInput::from_pipe()?, // carnivorous plant emerges
+    };
 
     let mut filename: PathBuf = args
         .output
