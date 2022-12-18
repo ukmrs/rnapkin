@@ -53,6 +53,42 @@ where
     Ok(())
 }
 
+fn highlighted_bubble<C, D, S>(
+    coords: Point,
+    radius: f64,
+    letter: S,
+    bbl_clr: &C,
+    hhl_clr: &C,
+    bg_clr: &C,
+    drawing_area: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
+) -> Result<()>
+where
+    C: Color,
+    D: DrawingBackend,
+    S: Borrow<str> + 'static,
+{
+    let pos = Pos::new(HPos::Center, VPos::Center);
+    let nc = Circle::new((0, 0), radius, Into::<ShapeStyle>::into(hhl_clr).filled());
+    let bc = Circle::new(
+        (0, 0),
+        radius * 0.9,
+        Into::<ShapeStyle>::into(bg_clr).filled(),
+    );
+    let c = Circle::new(
+        (0, 0),
+        radius * 0.8,
+        Into::<ShapeStyle>::into(bbl_clr).filled(),
+    );
+    let style = TextStyle::from(("mono", 0.8 * radius).into_font())
+        .pos(pos)
+        .color(&BLACK);
+
+    let text = Text::new(letter, (0, 0), style);
+    let ee = EmptyElement::at((coords.x, coords.y)) + nc + bc + c + text;
+    drawing_area.draw(&ee).unwrap(); // Cant "?", because there is extremely cursed lifetime on the error
+    Ok(())
+}
+
 fn get_distance(p0: Point, p1: Point) -> (f64, f64) {
     let xr = (p0.x - p1.x).abs();
     let xy = (p0.y - p1.y).abs();
@@ -64,14 +100,67 @@ fn draw<D: DrawingBackend>(
     bblv: &BubbleVec,
     radius: f64,
     theme: &ColorTheme,
+    highlights: &Vec<Option<usize>>,
 ) -> Result<()> {
-    for bbl in &bblv.bubbles {
-        match bbl.nt {
-            Nucleotide::A => nucleotide_bubble(bbl.point, radius, NTA, &theme.a, root)?,
-            Nucleotide::U => nucleotide_bubble(bbl.point, radius, NTU, &theme.u, root)?,
-            Nucleotide::G => nucleotide_bubble(bbl.point, radius, NTG, &theme.g, root)?,
-            Nucleotide::C => nucleotide_bubble(bbl.point, radius, NTC, &theme.c, root)?,
-            Nucleotide::X => nucleotide_bubble(bbl.point, radius, "", &theme.x, root)?,
+    for (bbl, highlight) in bblv.bubbles.iter().zip(highlights) {
+        if let Some(highlight_index) = highlight {
+            let highlight_color = theme.highlights[*highlight_index];
+
+            match bbl.nt {
+                Nucleotide::A => highlighted_bubble(
+                    bbl.point,
+                    radius,
+                    NTA,
+                    &theme.a,
+                    &highlight_color,
+                    &theme.bg,
+                    root,
+                )?,
+                Nucleotide::U => highlighted_bubble(
+                    bbl.point,
+                    radius,
+                    NTU,
+                    &theme.u,
+                    &highlight_color,
+                    &theme.bg,
+                    root,
+                )?,
+                Nucleotide::G => highlighted_bubble(
+                    bbl.point,
+                    radius,
+                    NTG,
+                    &theme.g,
+                    &highlight_color,
+                    &theme.bg,
+                    root,
+                )?,
+                Nucleotide::C => highlighted_bubble(
+                    bbl.point,
+                    radius,
+                    NTC,
+                    &theme.c,
+                    &highlight_color,
+                    &theme.bg,
+                    root,
+                )?,
+                Nucleotide::X => highlighted_bubble(
+                    bbl.point,
+                    radius,
+                    "",
+                    &theme.x,
+                    &highlight_color,
+                    &theme.bg,
+                    root,
+                )?,
+            }
+        } else {
+            match bbl.nt {
+                Nucleotide::A => nucleotide_bubble(bbl.point, radius, NTA, &theme.a, root)?,
+                Nucleotide::U => nucleotide_bubble(bbl.point, radius, NTU, &theme.u, root)?,
+                Nucleotide::G => nucleotide_bubble(bbl.point, radius, NTG, &theme.g, root)?,
+                Nucleotide::C => nucleotide_bubble(bbl.point, radius, NTC, &theme.c, root)?,
+                Nucleotide::X => nucleotide_bubble(bbl.point, radius, "", &theme.x, root)?,
+            }
         }
     }
 
@@ -130,6 +219,7 @@ pub fn plot<P: AsRef<Path>>(
     theme: &ColorTheme,
     height: u32,
     mirror: Mirror,
+    hs: Vec<Option<usize>>,
 ) -> Result<()> {
     let (dx, dy) = get_distance(bblv.upper_bounds, bblv.lower_bounds);
     let xyratio = dx / dy;
@@ -156,7 +246,7 @@ pub fn plot<P: AsRef<Path>>(
                 mirror,
             ));
             root.fill(&theme.bg)?;
-            draw(&root, bblv, radius, theme)?;
+            draw(&root, bblv, radius, theme, &hs)?;
         }
         Some("png") => {
             let root = BitMapBackend::new(filename, (ex, why)).into_drawing_area();
@@ -169,7 +259,7 @@ pub fn plot<P: AsRef<Path>>(
                 mirror,
             ));
             root.fill(&theme.bg)?;
-            draw(&root, bblv, radius, theme)?;
+            draw(&root, bblv, radius, theme, &hs)?;
         }
         _ => panic!("correct extension should be determined beforehand"),
     };

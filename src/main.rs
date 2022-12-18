@@ -22,6 +22,9 @@ struct Args {
     #[arg(short, long)]
     output: Option<String>,
 
+    #[arg(short, long)]
+    ghlight: Option<String>,
+
     /// Color theme; dark, bright, white/w, black/b
     #[arg(short, long, default_value = "dark")]
     theme: String,
@@ -121,6 +124,11 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
+    let highlights = match pi.highlight {
+        Some(hls) => draw::colors::user_input_to_highlight_indices(&hls),
+        None => vec![None; sequence.len()],
+    };
+
     draw::plot(
         &bubbles,
         BUBBLE_RADIUS,
@@ -128,6 +136,7 @@ fn main() -> Result<()> {
         &theme,
         args.height,
         mirror,
+        highlights,
     )?;
 
     // rnapkin panics earlier if filename is not valid utf8
