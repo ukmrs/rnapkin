@@ -26,7 +26,8 @@ pub mod default_pallette {
     // theres no sane alternative though; this is the way unfortunately;
     // other solutions are either dumb or are unintuitive for the user
     /// An array of 9 "flavored, distinct but not too avant-garde" colors:
-    /// - CHERRY_RED:          (221, 37, 30),  #DD2520
+    /// ```text
+    /// - CHERRY_RED:          (221, 37, 30)   #DD2520
     /// - BLUEBERRY_BLUE:      (54, 111, 177)  #3670B1
     /// - MINT_GREEN:          (141, 215, 145) #8DD791
     /// - LEMON_YELLOW:        (255, 253, 56)  #FFFD38
@@ -35,6 +36,7 @@ pub mod default_pallette {
     /// - ORANGE_CREAM:        (251, 187, 75)  #FBBB4B
     /// - PEANUT_BUTTER_BROWN: (164, 134, 69)  #A48644
     /// - LIME_GREEN:          (128, 255, 0)   #80FF00
+    /// ```
     pub const HIGHLIGHTS: [RGBColor; 9] = [
         RGBColor(221, 37, 30),   // CHERRY_RED
         RGBColor(54, 111, 177),  // BLUEBERRY_BLUE

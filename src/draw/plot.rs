@@ -100,11 +100,11 @@ fn draw<D: DrawingBackend>(
     bblv: &BubbleVec,
     radius: f64,
     theme: &ColorTheme,
-    highlights: &Vec<Option<usize>>,
+    highlights: &[Option<usize>],
 ) -> Result<()> {
-    for (bbl, highlight) in bblv.bubbles.iter().zip(highlights) {
-        if let Some(highlight_index) = highlight {
-            let highlight_color = theme.highlights[*highlight_index];
+    for bbl in &bblv.bubbles {
+        if let Some(highlight_index) = highlights[bbl.pos] {
+            let highlight_color = theme.highlights[highlight_index];
 
             match bbl.nt {
                 Nucleotide::A => highlighted_bubble(
