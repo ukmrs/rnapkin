@@ -29,24 +29,24 @@ pub mod default_pallette {
     /// ```text
     /// - CHERRY_RED:          (221, 37, 30)   #DD2520
     /// - BLUEBERRY_BLUE:      (54, 111, 177)  #3670B1
-    /// - MINT_GREEN:          (141, 215, 145) #8DD791
-    /// - LEMON_YELLOW:        (255, 253, 56)  #FFFD38
-    /// - POMEGRANATE_PINK:    (217, 87, 122)  #D95770
-    /// - GRAPE_PURPLE:        (106, 47, 107)  #6A2F6B
-    /// - ORANGE_CREAM:        (251, 187, 75)  #FBBB4B
-    /// - PEANUT_BUTTER_BROWN: (164, 134, 69)  #A48644
     /// - LIME_GREEN:          (128, 255, 0)   #80FF00
+    /// - GRAPE_PURPLE:        (106, 47, 107)  #6A2F6B
+    /// - LEMON_YELLOW:        (255, 253, 56)  #FFFD38
+    /// - ORANGE_CREAM:        (255, 84, 3)    #FF5403
+    /// - PEANUT_BUTTER_BROWN: (164, 134, 69)  #A48644
+    /// - POMEGRANATE_PINK:    (217, 87, 122)  #D95770
+    /// - MINT_GREEN:          (141, 215, 145) #8DD791
     /// ```
     pub const HIGHLIGHTS: [RGBColor; 9] = [
         RGBColor(221, 37, 30),   // CHERRY_RED
         RGBColor(54, 111, 177),  // BLUEBERRY_BLUE
-        RGBColor(141, 215, 145), // MINT_GREEN
-        RGBColor(255, 253, 56),  // LEMON_YELLOW
-        RGBColor(217, 87, 122),  // POMEGRANATE_PINK
-        RGBColor(106, 47, 107),  // GRAPE_PURPLE
-        RGBColor(251, 187, 75),  // ORANGE_CREAM
-        RGBColor(164, 134, 69),  // PEANUT_BUTTER_BROWN
         RGBColor(128, 255, 0),   // LIME_GREEN
+        RGBColor(106, 47, 107),  // GRAPE_PURPLE
+        RGBColor(255, 253, 56),  // LEMON_YELLOW
+        RGBColor(255, 84, 3),    // ORANGE_CREAM
+        RGBColor(164, 134, 69),  // PEANUT_BUTTER_BROWN
+        RGBColor(217, 87, 122),  // POMEGRANATE_PINK
+        RGBColor(141, 215, 145), // MINT_GREEN
     ];
 }
 

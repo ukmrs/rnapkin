@@ -71,12 +71,12 @@ where
     let nc = Circle::new((0, 0), radius, Into::<ShapeStyle>::into(hhl_clr).filled());
     let bc = Circle::new(
         (0, 0),
-        radius * 0.9,
+        radius * 0.8,
         Into::<ShapeStyle>::into(bg_clr).filled(),
     );
     let c = Circle::new(
         (0, 0),
-        radius * 0.8,
+        radius * 0.72,
         Into::<ShapeStyle>::into(bbl_clr).filled(),
     );
     let style = TextStyle::from(("mono", 0.8 * radius).into_font())
