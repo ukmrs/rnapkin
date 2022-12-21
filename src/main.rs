@@ -124,6 +124,8 @@ fn main() -> Result<()> {
         return Ok(());
     }
 
+    // TODO highlight is implementation is rushed
+    // I need the functionality but haven't got the time to do it nicely :c
     let highlights = match pi.highlight {
         Some(hls) => draw::colors::user_input_to_highlight_indices(&hls),
         None => vec![None; sequence.len()],

@@ -44,8 +44,8 @@ pub mod default_pallette {
         RGBColor(106, 47, 107),  // GRAPE_PURPLE
         RGBColor(255, 253, 56),  // LEMON_YELLOW
         RGBColor(255, 84, 3),    // ORANGE_CREAM
-        RGBColor(164, 134, 69),  // PEANUT_BUTTER_BROWN
         RGBColor(217, 87, 122),  // POMEGRANATE_PINK
+        RGBColor(164, 134, 69),  // PEANUT_BUTTER_BROWN
         RGBColor(141, 215, 145), // MINT_GREEN
     ];
 }
