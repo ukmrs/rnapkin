@@ -5,17 +5,11 @@ use std::path::Path;
 use super::colors::ColorTheme;
 use super::gather::BubbleVec;
 use super::Point;
-use crate::rnamanip::Nucleotide;
 
 use anyhow::Result;
 use plotters::coord::types::RangedCoordf64;
 use plotters::prelude::*;
 use plotters::style::text_anchor::{HPos, Pos, VPos};
-
-const NTA: &str = "A";
-const NTG: &str = "G";
-const NTC: &str = "C";
-const NTU: &str = "U";
 
 /// Indicates if and along which axes
 /// to mirror points
@@ -95,75 +89,12 @@ fn get_distance(p0: Point, p1: Point) -> (f64, f64) {
     (xr, xy)
 }
 
-fn draw<D: DrawingBackend>(
+fn draw_ends<D: DrawingBackend>(
     root: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
     bblv: &BubbleVec,
     radius: f64,
     theme: &ColorTheme,
-    highlights: &[Option<usize>],
 ) -> Result<()> {
-    for bbl in &bblv.bubbles {
-        if let Some(highlight_index) = highlights[bbl.pos] {
-            let highlight_color = theme.highlights[highlight_index];
-
-            match bbl.nt {
-                Nucleotide::A => highlighted_bubble(
-                    bbl.point,
-                    radius,
-                    NTA,
-                    &theme.a,
-                    &highlight_color,
-                    &theme.bg,
-                    root,
-                )?,
-                Nucleotide::U => highlighted_bubble(
-                    bbl.point,
-                    radius,
-                    NTU,
-                    &theme.u,
-                    &highlight_color,
-                    &theme.bg,
-                    root,
-                )?,
-                Nucleotide::G => highlighted_bubble(
-                    bbl.point,
-                    radius,
-                    NTG,
-                    &theme.g,
-                    &highlight_color,
-                    &theme.bg,
-                    root,
-                )?,
-                Nucleotide::C => highlighted_bubble(
-                    bbl.point,
-                    radius,
-                    NTC,
-                    &theme.c,
-                    &highlight_color,
-                    &theme.bg,
-                    root,
-                )?,
-                Nucleotide::X => highlighted_bubble(
-                    bbl.point,
-                    radius,
-                    "",
-                    &theme.x,
-                    &highlight_color,
-                    &theme.bg,
-                    root,
-                )?,
-            }
-        } else {
-            match bbl.nt {
-                Nucleotide::A => nucleotide_bubble(bbl.point, radius, NTA, &theme.a, root)?,
-                Nucleotide::U => nucleotide_bubble(bbl.point, radius, NTU, &theme.u, root)?,
-                Nucleotide::G => nucleotide_bubble(bbl.point, radius, NTG, &theme.g, root)?,
-                Nucleotide::C => nucleotide_bubble(bbl.point, radius, NTC, &theme.c, root)?,
-                Nucleotide::X => nucleotide_bubble(bbl.point, radius, "", &theme.x, root)?,
-            }
-        }
-    }
-
     let pos = Pos::new(HPos::Center, VPos::Center);
     let style = TextStyle::from(("mono", 1.1 * radius).into_font())
         .pos(pos)
@@ -184,8 +115,52 @@ fn draw<D: DrawingBackend>(
     // it also happened when I got rid of hard-coded filename
     root.draw(&end3).unwrap();
     root.draw(&end5).unwrap();
-    root.present().unwrap();
+    Ok(())
+}
 
+fn draw<D: DrawingBackend>(
+    root: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
+    bblv: &BubbleVec,
+    radius: f64,
+    theme: &ColorTheme,
+    highlights: &[Option<usize>],
+) -> Result<()> {
+    for bbl in &bblv.bubbles {
+        let (letter, bubble_color) = bbl.nt.extract_text_and_color(theme);
+        if let Some(highlight_index) = highlights[bbl.pos] {
+            let highlight_color = theme.highlights[highlight_index];
+            highlighted_bubble(
+                bbl.point,
+                radius,
+                letter,
+                bubble_color,
+                &highlight_color,
+                &theme.bg,
+                root,
+            )?;
+        } else {
+            nucleotide_bubble(bbl.point, radius, letter, bubble_color, root)?;
+        }
+    }
+
+    draw_ends(root, bblv, radius, theme)?;
+    root.present().unwrap();
+    Ok(())
+}
+
+#[allow(dead_code)]
+fn simple_draw<D: DrawingBackend>(
+    root: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
+    bblv: &BubbleVec,
+    radius: f64,
+    theme: &ColorTheme,
+) -> Result<()> {
+    for bbl in &bblv.bubbles {
+        let (letter, bubble_color) = bbl.nt.extract_text_and_color(theme);
+        nucleotide_bubble(bbl.point, radius, letter, bubble_color, root)?;
+    }
+    draw_ends(root, bblv, radius, theme)?;
+    root.present().unwrap();
     Ok(())
 }
 
@@ -219,7 +194,7 @@ pub fn plot<P: AsRef<Path>>(
     theme: &ColorTheme,
     height: u32,
     mirror: Mirror,
-    hs: Vec<Option<usize>>,
+    highlights: &[Option<usize>],
 ) -> Result<()> {
     let (dx, dy) = get_distance(bblv.upper_bounds, bblv.lower_bounds);
     let xyratio = dx / dy;
@@ -246,7 +221,7 @@ pub fn plot<P: AsRef<Path>>(
                 mirror,
             ));
             root.fill(&theme.bg)?;
-            draw(&root, bblv, radius, theme, &hs)?;
+            draw(&root, bblv, radius, theme, highlights)?;
         }
         Some("png") => {
             let root = BitMapBackend::new(filename, (ex, why)).into_drawing_area();
@@ -259,7 +234,7 @@ pub fn plot<P: AsRef<Path>>(
                 mirror,
             ));
             root.fill(&theme.bg)?;
-            draw(&root, bblv, radius, theme, &hs)?;
+            draw(&root, bblv, radius, theme, highlights)?;
         }
         _ => panic!("correct extension should be determined beforehand"),
     };

@@ -138,7 +138,7 @@ fn main() -> Result<()> {
         &theme,
         args.height,
         mirror,
-        highlights,
+        &highlights,
     )?;
 
     // rnapkin panics earlier if filename is not valid utf8
