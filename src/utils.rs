@@ -19,6 +19,7 @@ pub struct ParsedInput {
     pub sequence: Option<String>,
     pub secondary_structure: Option<String>,
     pub rna_name: Option<String>,
+    pub highlight: Option<String>,
 }
 
 fn empty_then_none(s: String) -> Option<String> {
@@ -60,6 +61,7 @@ impl ParsedInput {
     {
         let mut sequence = String::with_capacity(300);
         let mut secondary_structure = String::with_capacity(300);
+        let mut highlight = String::with_capacity(300);
         let mut rna_name: Option<String> = None;
 
         for line in lines {
@@ -70,6 +72,7 @@ impl ParsedInput {
             match &trimmed[0..1].as_bytes()[0] {
                 0x41..=0x55 | 0x61..=0x75 => sequence.push_str(trimmed), // [A-Ua-u] can catch some non nt but then the input is doomed anyway
                 0x2e | 0x28 | 0x29 => secondary_structure.push_str(trimmed), // .()
+                0x30..=0x39 => highlight.push_str(trimmed),              // 0-9
                 0x3e => rna_name = Some(line[1..].trim().replace(' ', "_")), // >
                 _ => continue,
             }
@@ -78,6 +81,7 @@ impl ParsedInput {
         Ok(ParsedInput {
             sequence: empty_then_none(sequence),
             secondary_structure: empty_then_none(secondary_structure),
+            highlight: empty_then_none(highlight),
             rna_name,
         })
     }
@@ -136,6 +140,7 @@ mod tests {
             sequence: Some(seq.to_string()),
             secondary_structure: Some(sst.to_string()),
             rna_name: None,
+            highlight: None,
         };
 
         let test_rna = format!("{}\n{}\n", seq, sst);
@@ -169,6 +174,7 @@ mod tests {
             sequence: TENASEQ.to_string().into(),
             secondary_structure: TENASST.to_string().into(),
             rna_name: TENANAME.to_string().into(),
+            highlight: None,
         };
 
         let pi = parse_helper(TENA);

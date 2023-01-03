@@ -1,4 +1,12 @@
+use crate::draw::colors::ColorTheme;
+use plotters::style::RGBColor;
 use std::fmt;
+
+const NTA: &str = "A";
+const NTG: &str = "G";
+const NTC: &str = "C";
+const NTU: &str = "U";
+const NTX: &str = "";
 
 #[derive(Debug, Clone, Copy)]
 pub enum Nucleotide {
@@ -23,6 +31,16 @@ impl Nucleotide {
         };
 
         Some(nt)
+    }
+
+    pub fn extract_text_and_color(self, theme: &ColorTheme) -> (&'static str, &RGBColor) {
+        match self {
+            Nucleotide::A => (NTA, &theme.a),
+            Nucleotide::U => (NTU, &theme.u),
+            Nucleotide::G => (NTG, &theme.g),
+            Nucleotide::C => (NTC, &theme.c),
+            Nucleotide::X => (NTX, &theme.x),
+        }
     }
 }
 

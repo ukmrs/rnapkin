@@ -82,11 +82,39 @@ which has priority. Here are some variations of valid input files:
 ```text
 # you can add .png to the name to request png instead of svg
 @ the same of course can be achieved with -o flag.
-* this is a comment btw: any symbol other than ">.()" works
+* this is a comment btw: any symbol other than ">.()" works but prefer "#"
 >simple molecule.png
 ((((((((((..((((((.........))))))......).((((((.......))))))..)))))))))
 CGCUUCAUAUAAUCCUAAUGAUAUGGUUUGGGAGUUUCUACCAAGAGCCUUAAACUCUUGAUUAUGAAGUG
 ```
+
+### Highlighting!
+There are [9 available colors](https://docs.rs/rnapkin/0.3.2/rnapkin/draw/colors/default_pallette/constant.HIGHLIGHTS.html) 
+denoted by 1-9, while 0 means None.
+For example consider input below representing SAM riboswitch in the OFF conformation
+according to smFRET study by [Manz et al. 2017](https://doi.org/10.1038/nchembio.2476).
+By using numbers in the input we can mark aptamer forming helices P1, P2, P3, P4 #2-#5 and
+the **TERMINATOR** #1.
+
+```text
+> offsam
+
+0000022222222223333333333333333333333333333333333444444444444444444444444444444
+AUAUCCGUUCUUAUCAAGAGAAGCAGAGGGACUGGCCCGACGAUGCUUCAGCAACCAGUGUAAUGGCGAUCAGCCAUGA
+.......((((((((....(((((...(((.....)))......)))))(((..(((((...(((((.....))))).)
+
+4444444444555555555555555555555555555522222222222211111111111111111111111111111
+CUAAGGUGCUAAAUCCAGCAAGCUCGAACAGCUUGGAAGAUAAGAAGAGACAAAAUCACUGACAAAGUCUUCUUCUUAA
+))..)).)))........((((((.....))))))...)))))))).................((((((.((((...))
+
+111111111111
+GAGGACUUUUUU
+)).))))))...
+```
+
+<p align="center">
+ <img src="https://raw.githubusercontent.com/ukmrs/gallery/main/rnapkin/v0.3.2/offsam.svg" />
+</p>
 
 ### only secondary structure
 
@@ -98,7 +126,7 @@ CGCUUCAUAUAAUCCUAAUGAUAUGGUUUGGGAGUUUCUACCAAGAGCCUUAAACUCUUGAUUAUGAAGUG
 ```
 
 ### multiline
-You've seen it already; sequence and secondary structure can be separate,
+sequence and secondary structure can be separate,
 mixed and aligned, everything should work.
 
 ## DIY

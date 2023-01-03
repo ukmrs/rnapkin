@@ -21,6 +21,40 @@ pub mod default_pallette {
     pub const BRIGHT_X: RGBColor = RGBColor(211, 134, 155);
     pub const BRIGHT_BG: RGBColor = RGBColor(251, 241, 199);
     pub const BRIGHT_FG: RGBColor = RGBColor(60, 56, 54);
+
+    // TRUST me it absolutely KILLS ME that HIGHLIGHT_1's index is 0, but alas 'HIGHLIGHT_0' means no highlight
+    // theres no sane alternative though; this is the way unfortunately;
+    // other solutions are either dumb or are unintuitive for the user
+    /// An array of 9 "flavored, distinct but not too avant-garde" colors:
+    /// ```text
+    /// - CHERRY_RED:          (221, 37, 30)   #DD2520
+    /// - BLUEBERRY_BLUE:      (54, 111, 177)  #3670B1
+    /// - LIME_GREEN:          (128, 255, 0)   #80FF00
+    /// - GRAPE_PURPLE:        (106, 47, 107)  #6A2F6B
+    /// - LEMON_YELLOW:        (255, 253, 56)  #FFFD38
+    /// - ORANGE_CREAM:        (255, 84, 3)    #FF5403
+    /// - PEANUT_BUTTER_BROWN: (164, 134, 69)  #A48644
+    /// - POMEGRANATE_PINK:    (217, 87, 122)  #D95770
+    /// - MINT_GREEN:          (141, 215, 145) #8DD791
+    /// ```
+    pub const HIGHLIGHTS: [RGBColor; 9] = [
+        RGBColor(221, 37, 30),   // CHERRY_RED
+        RGBColor(54, 111, 177),  // BLUEBERRY_BLUE
+        RGBColor(128, 255, 0),   // LIME_GREEN
+        RGBColor(106, 47, 107),  // GRAPE_PURPLE
+        RGBColor(255, 253, 56),  // LEMON_YELLOW
+        RGBColor(255, 84, 3),    // ORANGE_CREAM
+        RGBColor(217, 87, 122),  // POMEGRANATE_PINK
+        RGBColor(164, 134, 69),  // PEANUT_BUTTER_BROWN
+        RGBColor(141, 215, 145), // MINT_GREEN
+    ];
+}
+
+// TODO i mean this obviously can be u8 its just more convenient as usize
+pub fn user_input_to_highlight_indices(hls: &str) -> Vec<Option<usize>> {
+    hls.bytes()
+        .map(|c| (c as usize).checked_sub(0x31))
+        .collect()
 }
 
 #[derive(Debug, Clone)]
@@ -39,6 +73,8 @@ pub struct ColorTheme {
     pub bg: RGBColor,
     /// foreground
     pub fg: RGBColor,
+    /// since 0 means no highlight; highlight1 is 0indexed and so on
+    pub highlights: [RGBColor; 9],
 }
 
 impl ColorTheme {
@@ -51,6 +87,7 @@ impl ColorTheme {
             x: default_pallette::DARK_X,
             bg: default_pallette::DARK_BG,
             fg: default_pallette::DARK_FG,
+            highlights: default_pallette::HIGHLIGHTS,
         }
     }
 
@@ -63,6 +100,7 @@ impl ColorTheme {
             x: default_pallette::BRIGHT_X,
             bg: default_pallette::BRIGHT_BG,
             fg: default_pallette::BRIGHT_FG,
+            highlights: default_pallette::HIGHLIGHTS,
         }
     }
 
