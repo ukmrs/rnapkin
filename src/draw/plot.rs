@@ -53,7 +53,7 @@ fn highlighted_bubble<C, D, S>(
     letter: S,
     bbl_clr: &C,
     hhl_clr: &C,
-    bg_clr: &C,
+    bg_clr: &RGBAColor,
     drawing_area: &DrawingArea<D, Cartesian2d<RangedCoordf64, RangedCoordf64>>,
 ) -> Result<()>
 where
