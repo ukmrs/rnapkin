@@ -34,7 +34,7 @@ impl ParsedInput {
     /// reads file and passes it to Self::parse
     pub fn from_file(input_file: &str) -> Result<Self> {
         let mut lines = read_lines(input_file)
-            .with_context(|| format!("could not read file: {}", input_file))?
+            .with_context(|| format!("could not read file: {input_file}"))?
             .map(|x| x.expect("invalid utf8?"));
         Self::parse(&mut lines)
     }

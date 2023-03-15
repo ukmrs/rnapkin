@@ -1,8 +1,8 @@
-use plotters::style::RGBColor;
+use plotters::style::{RGBAColor, RGBColor};
 
 #[allow(dead_code)]
 pub mod default_pallette {
-    use plotters::style::RGBColor;
+    use plotters::style::{RGBAColor, RGBColor};
     // gruvbox colors https://github.com/morhetz/gruvbox
     // dark
     pub const DARK_C: RGBColor = RGBColor(184, 187, 38); // green for cytosine
@@ -10,7 +10,7 @@ pub mod default_pallette {
     pub const DARK_G: RGBColor = RGBColor(251, 73, 52); // red for guanine
     pub const DARK_A: RGBColor = RGBColor(250, 189, 47); // yellow for adenine
     pub const DARK_X: RGBColor = RGBColor(211, 134, 155); // purple for the unknown
-    pub const DARK_BG: RGBColor = RGBColor(40, 40, 40); // background
+    pub const DARK_BG: RGBAColor = RGBAColor(40, 40, 40, 1.0); // background
     pub const DARK_FG: RGBColor = RGBColor(235, 219, 178); // lettering
 
     // bright ones
@@ -19,7 +19,7 @@ pub mod default_pallette {
     pub const BRIGHT_G: RGBColor = RGBColor(204, 36, 29);
     pub const BRIGHT_A: RGBColor = RGBColor(215, 153, 33);
     pub const BRIGHT_X: RGBColor = RGBColor(211, 134, 155);
-    pub const BRIGHT_BG: RGBColor = RGBColor(251, 241, 199);
+    pub const BRIGHT_BG: RGBAColor = RGBAColor(251, 241, 199, 1.0);
     pub const BRIGHT_FG: RGBColor = RGBColor(60, 56, 54);
 
     // TRUST me it absolutely KILLS ME that HIGHLIGHT_1's index is 0, but alas 'HIGHLIGHT_0' means no highlight
@@ -70,7 +70,7 @@ pub struct ColorTheme {
     /// unknown nt
     pub x: RGBColor,
     /// background
-    pub bg: RGBColor,
+    pub bg: RGBAColor,
     /// foreground
     pub fg: RGBColor,
     /// since 0 means no highlight; highlight1 is 0indexed and so on
@@ -106,14 +106,14 @@ impl ColorTheme {
 
     pub fn black() -> Self {
         Self {
-            bg: RGBColor(0, 0, 0),
+            bg: RGBAColor(0, 0, 0, 0.),
             ..Self::bright()
         }
     }
 
     pub fn white() -> Self {
         Self {
-            bg: RGBColor(255, 255, 255),
+            bg: RGBAColor(255, 255, 255, 0.),
             ..Self::bright()
         }
     }

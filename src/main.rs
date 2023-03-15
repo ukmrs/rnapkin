@@ -33,6 +33,10 @@ struct Args {
     #[arg(short, long, default_value_t = 0.)]
     angle: f64,
 
+    /// background opacity between (1., 0.) (opaque, transparent)
+    #[arg(short, long)]
+    bgopacity: Option<f64>,
+
     /// Mirror along y axis
     #[arg(long, default_value_t = false)]
     my: bool,
@@ -75,7 +79,7 @@ fn main() -> Result<()> {
         }
     };
 
-    let theme = match args.theme.as_ref() {
+    let mut theme = match args.theme.as_ref() {
         "dark" => ColorTheme::dark(),
         "white" | "w" => ColorTheme::white(),
         "black" | "b" => ColorTheme::black(),
@@ -88,6 +92,10 @@ fn main() -> Result<()> {
             ColorTheme::default()
         }
     };
+
+    if let Some(bgopacity) = args.bgopacity {
+        theme.bg.3 = bgopacity;
+    }
 
     let (pairlist, sequence) = match (pi.secondary_structure, pi.sequence) {
         (Some(sst), Some(seq)) => {
