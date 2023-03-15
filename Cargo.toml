@@ -1,6 +1,6 @@
 [package]
 name = "rnapkin"
-version = "0.3.4"
+version = "0.3.5"
 edition = "2021"
 authors = ["ukmrs <murias.wstork@gmail.com>"]
 repository = "https://github.com/ukmrs/rnapkin"
