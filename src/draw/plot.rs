@@ -236,6 +236,23 @@ pub fn plot<P: AsRef<Path>>(
             root.fill(&theme.bg)?;
             draw(&root, bblv, radius, theme, highlights)?;
         }
+        Some("x") => {
+            let mut svgstring = String::with_capacity(0x10000);
+            {
+                let root = SVGBackend::with_string(&mut svgstring, (ex, why)).into_drawing_area();
+                let root = root.apply_coord_spec(calculate_coords(
+                    bblv.upper_bounds,
+                    bblv.lower_bounds,
+                    ex as i32,
+                    why as i32,
+                    margin,
+                    mirror,
+                ));
+                root.fill(&theme.bg)?;
+                draw(&root, bblv, radius, theme, highlights)?
+            }
+            println!("{svgstring}");
+        }
         _ => panic!("correct extension should be determined beforehand"),
     };
 

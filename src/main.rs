@@ -52,6 +52,10 @@ struct Args {
     /// Print x,y,nucleotide,position (0 indexed) and exit
     #[arg(short, long, default_value_t = false)]
     points: bool,
+
+    /// print the svg instead of saving it to a file
+    #[arg(short, long, default_value_t = false)]
+    svgprint: bool,
 }
 
 fn main() -> Result<()> {
@@ -67,17 +71,24 @@ fn main() -> Result<()> {
         .unwrap_or_else(|| pi.rna_name.unwrap_or_else(|| "rnaimg.svg".to_owned()))
         .into();
 
-    match filename.extension().and_then(OsStr::to_str) {
-        Some("png") | Some("svg") => (),
-        _ => {
-            // slapping .svg on top of filename; filename.set_extension() does work
-            // but may overwrite something not meant to be an extension
-            filename = PathBuf::from(format!(
-                "{}.svg",
-                filename.to_str().expect("filename is not valid utf8?")
-            ));
-        }
-    };
+    if args.svgprint {
+        // note while this is kinda sus
+        // you cannot enter .x via -o or infile >
+        // because it will get changed to o.x.svg
+        filename = PathBuf::from("o.x")
+    } else {
+        match filename.extension().and_then(OsStr::to_str) {
+            Some("png") | Some("svg") => (),
+            _ => {
+                // slapping .svg on top of filename; filename.set_extension() does work
+                // but may overwrite something not meant to be an extension
+                filename = PathBuf::from(format!(
+                    "{}.svg",
+                    filename.to_str().expect("filename is not valid utf8?")
+                ));
+            }
+        };
+    }
 
     let mut theme = match args.theme.as_ref() {
         "dark" => ColorTheme::dark(),
@@ -149,8 +160,10 @@ fn main() -> Result<()> {
         &highlights,
     )?;
 
-    // rnapkin panics earlier if filename is not valid utf8
-    println!("{}", &filename.to_str().unwrap());
+    if !args.svgprint {
+        // rnapkin panics earlier if filename is not valid utf8
+        println!("{}", &filename.to_str().unwrap());
+    }
 
     Ok(())
 }
