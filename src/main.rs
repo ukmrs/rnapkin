@@ -22,9 +22,6 @@ struct Args {
     #[arg(short, long)]
     output: Option<String>,
 
-    #[arg(short, long)]
-    ghlight: Option<String>,
-
     /// Color theme; dark, bright, white/w, black/b
     #[arg(short, long, default_value = "dark")]
     theme: String,
