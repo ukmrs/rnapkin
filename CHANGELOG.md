@@ -1,3 +1,6 @@
+# v0.3.3
+- added background opacity option 
+
 # v0.3.2
 - Highlighting (pre)
 
