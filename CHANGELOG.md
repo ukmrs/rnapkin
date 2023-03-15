@@ -1,3 +1,6 @@
+# v0.3.4
+- added svgprint option
+
 # v0.3.3
 - added background opacity option 
 
