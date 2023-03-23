@@ -35,7 +35,7 @@ pub mod default_pallette {
     /// - TURQUOISE:           (64, 224, 208)  #40E0D0
     /// ```
     pub const HIGHLIGHTS: [RGBColor; 9] = [
-        RGBColor(255, 3, 3),     // RED
+        RGBColor(133, 0, 0),     // RED
         RGBColor(18, 93, 152),   // BLUE
         RGBColor(55, 146, 55),   // GREEN
         RGBColor(255, 105, 180), // PINK
