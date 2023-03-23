@@ -22,31 +22,28 @@ pub mod default_pallette {
     pub const BRIGHT_BG: RGBAColor = RGBAColor(251, 241, 199, 1.0);
     pub const BRIGHT_FG: RGBColor = RGBColor(60, 56, 54);
 
-    // TRUST me it absolutely KILLS ME that HIGHLIGHT_1's index is 0, but alas 'HIGHLIGHT_0' means no highlight
-    // theres no sane alternative though; this is the way unfortunately;
-    // other solutions are either dumb or are unintuitive for the user
-    /// An array of 9 "flavored, distinct but not too avant-garde" colors:
+    /// An array of 9 colors:
     /// ```text
-    /// - CHERRY_RED:          (221, 37, 30)   #DD2520
-    /// - BLUEBERRY_BLUE:      (54, 111, 177)  #3670B1
-    /// - LIME_GREEN:          (128, 255, 0)   #80FF00
-    /// - GRAPE_PURPLE:        (106, 47, 107)  #6A2F6B
-    /// - LEMON_YELLOW:        (255, 253, 56)  #FFFD38
-    /// - ORANGE_CREAM:        (255, 84, 3)    #FF5403
-    /// - PEANUT_BUTTER_BROWN: (164, 134, 69)  #A48644
-    /// - POMEGRANATE_PINK:    (217, 87, 122)  #D95770
-    /// - MINT_GREEN:          (141, 215, 145) #8DD791
+    /// - RED:                 (255, 3, 3)     #FF0303
+    /// - BLUE:                (18, 93, 152)   #125D98
+    /// - GREEN:               (55, 146, 55)   #379237
+    /// - PINK:                (255, 105, 180) #FF69B4
+    /// - ORANGE:              (245, 134, 52)  #F58634
+    /// - PURPLE:              (146, 67, 238)  #9243EE
+    /// - LEMON:               (240, 212, 58)  #F0D43A
+    /// - BROWN:               (158, 117, 64)  #9E7540
+    /// - TURQUOISE:           (64, 224, 208)  #40E0D0
     /// ```
     pub const HIGHLIGHTS: [RGBColor; 9] = [
-        RGBColor(221, 37, 30),   // CHERRY_RED
-        RGBColor(54, 111, 177),  // BLUEBERRY_BLUE
-        RGBColor(128, 255, 0),   // LIME_GREEN
-        RGBColor(106, 47, 107),  // GRAPE_PURPLE
-        RGBColor(255, 253, 56),  // LEMON_YELLOW
-        RGBColor(255, 84, 3),    // ORANGE_CREAM
-        RGBColor(217, 87, 122),  // POMEGRANATE_PINK
-        RGBColor(164, 134, 69),  // PEANUT_BUTTER_BROWN
-        RGBColor(141, 215, 145), // MINT_GREEN
+        RGBColor(255, 3, 3),     // RED
+        RGBColor(18, 93, 152),   // BLUE
+        RGBColor(55, 146, 55),   // GREEN
+        RGBColor(255, 105, 180), // PINK
+        RGBColor(245, 134, 52),  // ORANGE
+        RGBColor(146, 67, 238),  // PURPLE
+        RGBColor(240, 212, 58),  // YELLOW
+        RGBColor(158, 117, 64),  // BROWN
+        RGBColor(64, 224, 208),  // TURQUOISE
     ];
 }
 
@@ -106,14 +103,14 @@ impl ColorTheme {
 
     pub fn black() -> Self {
         Self {
-            bg: RGBAColor(0, 0, 0, 0.),
+            bg: RGBAColor(0, 0, 0, 1.),
             ..Self::bright()
         }
     }
 
     pub fn white() -> Self {
         Self {
-            bg: RGBAColor(255, 255, 255, 0.),
+            bg: RGBAColor(255, 255, 255, 1.),
             ..Self::bright()
         }
     }
