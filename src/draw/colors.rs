@@ -24,7 +24,7 @@ pub mod default_pallette {
 
     /// An array of 9 colors:
     /// ```text
-    /// - RED:                 (255, 3, 3)     #FF0303
+    /// - RED:                 (133, 0, 0)     #850000
     /// - BLUE:                (18, 93, 152)   #125D98
     /// - GREEN:               (55, 146, 55)   #379237
     /// - PINK:                (255, 105, 180) #FF69B4
