@@ -103,14 +103,14 @@ impl ColorTheme {
 
     pub fn black() -> Self {
         Self {
-            bg: RGBAColor(0, 0, 0, 0.),
+            bg: RGBAColor(0, 0, 0, 1.),
             ..Self::bright()
         }
     }
 
     pub fn white() -> Self {
         Self {
-            bg: RGBAColor(255, 255, 255, 0.),
+            bg: RGBAColor(255, 255, 255, 1.),
             ..Self::bright()
         }
     }
