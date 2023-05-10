@@ -55,7 +55,7 @@ impl ParsedInput {
     /// interprets .() as secondary structure
     /// interprets > as name
     /// ignores everything else
-    fn parse<L>(lines: &mut L) -> Result<Self>
+    pub fn parse<L>(lines: &mut L) -> Result<Self>
     where
         L: Iterator<Item = String>,
     {

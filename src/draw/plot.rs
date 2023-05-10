@@ -195,7 +195,7 @@ pub fn plot<P: AsRef<Path>>(
     height: u32,
     mirror: Mirror,
     highlights: &[Option<usize>],
-) -> Result<()> {
+) -> Result<Option<String>> {
     let (dx, dy) = get_distance(bblv.upper_bounds, bblv.lower_bounds);
     let xyratio = dx / dy;
 
@@ -251,10 +251,10 @@ pub fn plot<P: AsRef<Path>>(
                 root.fill(&theme.bg)?;
                 draw(&root, bblv, radius, theme, highlights)?
             }
-            println!("{svgstring}");
+            return Ok(Some(svgstring));
         }
         _ => panic!("correct extension should be determined beforehand"),
     };
 
-    Ok(())
+    Ok(None)
 }

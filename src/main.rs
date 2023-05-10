@@ -147,7 +147,7 @@ fn main() -> Result<()> {
         None => vec![None; sequence.len()],
     };
 
-    draw::plot(
+    let svgout = draw::plot(
         &bubbles,
         BUBBLE_RADIUS,
         &filename,
@@ -157,9 +157,9 @@ fn main() -> Result<()> {
         &highlights,
     )?;
 
-    if !args.svgprint {
-        // rnapkin panics earlier if filename is not valid utf8
-        println!("{}", &filename.to_str().unwrap());
+    match svgout {
+        Some(svg_string) => println!("{svg_string}"),
+        None => println!("{}", &filename.to_str().unwrap()),
     }
 
     Ok(())
